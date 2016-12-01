@@ -13,12 +13,62 @@ import ma.body
 import logging
 
 
+def readC3d(filename):
+    node = ma.io.read(filename)
+    trial = node.findChild(ma.T_Trial)
+    
+    return trial
+
+def writeC3d(trial,filename):
+    root = ma.Node('root')
+    trial.addParent(root)    
+    
+
+    ma.io.write(root,filename)
+
+
 def isTimeSequenceExist(trial,label):
     try:
         trial.findChild(ma.T_TimeSequence,label)
         return True
     except ValueError:
         return False
+
+
+
+def smartAppendTimeSequence(trial,label,values,PointType= ma.TimeSequence.Type_Marker,desc="",unit="mm"):
+    logging.debug("new point (%s) added to the c3d" % label)
+
+    
+    
+    if isTimeSequenceExist(trial,label):
+        ts = trial.findChild(ma.T_TimeSequence,label)
+        ts.setData(values)
+        ts.setDescription(desc)
+        ts.setType(PointType)
+
+        
+    else:
+        
+        
+        freq = trial.property("TRIAL:CAMERA_RATE").cast()      
+        firstFrame = trial.property("TRIAL:ACTUAL_START_FIELD").cast()[0]-1      
+ 
+        tss = trial.timeSequences()
+
+        samples = len(values)
+        if PointType == ma.TimeSequence.Type_Marker:         
+            dim = 4
+
+        ts = ma.TimeSequence(label,dim,samples,freq, firstFrame/freq,PointType,unit);
+        ts.setData(values)
+        ts.setDescription(desc)
+        
+    
+        ts.addParent(tss)
+
+
+
 
             
     
