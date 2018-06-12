@@ -216,6 +216,7 @@ class CGM1LowerLimbs(CGM):
         """
             Model configuration. Define Segment, joint, ...
         """
+
         self.addSegment("Pelvis",0,enums.SegmentSide.Central,calibration_markers=[], tracking_markers = ["LASI","RASI","LPSI","RPSI"])
         self.addSegment("Left Thigh",1,enums.SegmentSide.Left,calibration_markers=[], tracking_markers = ["LKNE","LTHI"])
         self.addSegment("Right Thigh",4,enums.SegmentSide.Right,calibration_markers=[], tracking_markers = ["RKNE","RTHI"])
@@ -234,9 +235,6 @@ class CGM1LowerLimbs(CGM):
             self.addJoint("LKnee","Left Thigh", "Left Shank Proximal","YXZ","LKJC")
         else:
             self.addJoint("LKnee","Left Thigh", "Left Shank","YXZ","LKJC")
-
-
-        #self.addJoint("LKneeAngles_cgm","Left Thigh", "Left Shank","YXZ")
         self.addJoint("LAnkle","Left Shank", "Left Foot","YXZ","LAJC")
 
         self.addJoint("RHip","Pelvis", "Right Thigh","YXZ","RHJC")
@@ -244,10 +242,8 @@ class CGM1LowerLimbs(CGM):
             self.addJoint("RKnee","Right Thigh", "Right Shank Proximal","YXZ","RKJC")
         else:
             self.addJoint("RKnee","Right Thigh", "Right Shank","YXZ","RKJC")
-
-
-        #self.addJoint("RKneeAngles_cgm","Right Thigh", "Right Shank","YXZ")
         self.addJoint("RAnkle","Right Shank", "Right Foot","YXZ","RAJC")
+
 
         # clinics
         self.setClinicalDescriptor("LHip",enums.DataType.Angle, [0,1,2],[-1.0,-1.0,-1.0], [0.0,0.0,0.0])
@@ -4346,3 +4342,1691 @@ class CGM1LowerLimbs(CGM):
                     else:
                         nexusTools.appendPowerFromAcq(NEXUS,vskName,str(it.GetLabel()), acq)
             logging.debug("power over")
+
+class CGM1UpperLimbs(CGM):
+    def __init__(self):
+        super(CGM1UpperLimbs, self).__init__()
+        self.decoratedModel = False
+        self.version = "CGM1.0-UL"
+
+    def __repr__(self):
+        return "UpperLimb CGM1.0"
+
+    def configure(self):
+        """
+            Model configuration. Define Segment, joint, ...
+        """
+
+        self.addSegment("Head",0,enums.SegmentSide.Central,calibration_markers=[], tracking_markers = ["LFHD","RFHD","LBHD","RBHD"])
+        self.addSegment("Thorax",0,enums.SegmentSide.Central,calibration_markers=[], tracking_markers = ["CLAV","C7","T10","STRN"])
+        self.addSegment("Left Clavicle",0,enums.SegmentSide.Left,calibration_markers=[], tracking_markers = [])
+        self.addSegment("Left UpperArm",0,enums.SegmentSide.Left,calibration_markers=[], tracking_markers = ["LSJC","LUPA","LELB"])
+        self.addSegment("Left ForeArm",0,enums.SegmentSide.Left,calibration_markers=[], tracking_markers = ["LWRA","LWRB","LFRM","LEJC"])
+        self.addSegment("Left Hand",0,enums.SegmentSide.Left,calibration_markers=[], tracking_markers = ["LWRA","LWRB","LFIN","LWJC"])
+
+        self.addJoint("LShoulder","Thorax", "Left UpperArm","XYZ","LSJC")
+        self.addJoint("LElbow","Left UpperArm", "Left ForeArm","YXZ","LEJC")
+        self.addJoint("LWrist","Left ForeArm", "Left Hand","YXZ","LWJC")
+        self.addJoint("LNeck","Thorax", "Head","YXZ","OT")
+
+        # clinics
+        self.setClinicalDescriptor("LShoulder",enums.DataType.Angle, [1,0,2],[-1.0,1.0,-1.0], [0.0,np.radians(180),np.radians(-180)])
+        self.setClinicalDescriptor("LElbow",enums.DataType.Angle, [0,2,1],[1.0,1.0,1.0], [0.0,0.0,0.0])
+        self.setClinicalDescriptor("LWrist",enums.DataType.Angle, [0,1,2],[1.0,-1.0,-1.0], [0.0,0,0.0])
+        self.setClinicalDescriptor("LNeck",enums.DataType.Angle, [0,2,1],[-1.0,1.0,1.0], [-np.radians(180),np.radians(180),0.0])
+
+        self.__coordinateSystemDefinitions()
+
+    def calibrationProcedure(self):
+        """
+            Define the calibration Procedure
+
+            :Return:
+                - `dictRef` (dict) - dictionnary reporting markers and sequence use for building Technical coordinate system
+                - `dictRefAnatomical` (dict) - dictionnary reporting markers and sequence use for building Anatomical coordinate system
+        """
+
+        dictRef={}
+        dictRef["Thorax"]={"TF" : {'sequence':"ZYX", 'labels':   ["midTop","midBottom","midFront","CLAV"]} }
+        dictRef["Left Clavicle"]={"TF" : {'sequence':"ZXY", 'labels':   ["LSJC","OT","LVWM","LSJC"]} } # OT and LWM from thorax
+        dictRef["Head"]={"TF" : {'sequence':"XZY", 'labels':   ["midBH","midFH","LBHD","HC"]} }
+        dictRef["Left UpperArm"]={"TF" : {'sequence':"ZYiX", 'labels':   ["LELB","LSJC","LCVM","LELB"]} }
+        dictRef["Left ForeArm"]={"TF" : {'sequence':"ZXY", 'labels':   ["LWRA","LEJC","LWRB","LWRB"]} }
+        dictRef["Left Hand"]={"TF" : {'sequence':"ZYX", 'labels':   ["LFIN","LWJC","LMWP","LFIN"]} }
+
+        dictRefAnatomical={}
+        dictRefAnatomical["Thorax"]= {'sequence':"ZYX", 'labels':  ["midTop","midBottom","midFront","CLAV"]}
+        dictRefAnatomical["Left Clavicle"]={'sequence':"ZXY", 'labels':   ["LSJC","OT","LVWM","LSJC"]} # idem technical
+        dictRefAnatomical["Head"]={'sequence':"XZY", 'labels':   ["midBH","midFH","LBHD","HC"]}
+        dictRefAnatomical["Left UpperArm"]={'sequence':"ZYiX", 'labels':   ["LEJC","LSJC","LWJC","LEJC"]}
+        dictRefAnatomical["Left ForeArm"]={'sequence':"ZXiY", 'labels':   ["LWJC","LEJC",None,"LWJC"]} # used y axis of upper
+        dictRefAnatomical["Left Hand"]={'sequence':"ZYX", 'labels':   ["LHO","LWJC","LMWP","LHO"]}
+
+        return dictRef,dictRefAnatomical
+
+    def __coordinateSystemDefinitions(self):
+        self.setCoordinateSystemDefinition( "Thorax", "THORAX", "Anatomic")
+        self.setCoordinateSystemDefinition( "Left Clavicle", "LCLAVICLE", "Anatomic")
+        self.setCoordinateSystemDefinition( "Head", "HEAD", "Anatomic")
+        self.setCoordinateSystemDefinition( "Left UpperArm", "LUPPERARM", "Anatomic")
+        self.setCoordinateSystemDefinition( "Left ForeArm", "LFOREARM", "Anatomic")
+        self.setCoordinateSystemDefinition( "Left Hand", "LHANDARM", "Anatomic")
+
+    def calibrate(self,aquiStatic, dictRef, dictAnatomic,  options=None):
+        ff=aquiStatic.GetFirstFrame()
+        lf=aquiStatic.GetLastFrame()
+        frameInit=ff-ff
+        frameEnd=lf-ff+1
+
+        if not self.decoratedModel:
+            logging.debug(" Native CGM")
+        else:
+            logging.debug(" Decorated CGM")
+
+        # new markers (Thorax)
+
+        # new markers (Wrist)
+
+
+
+
+
+        #-------------------------------------
+        # calibration of technical Referentials
+        logging.debug(" --- TORSO - TF calibration ---")
+        logging.debug(" -------------------------------")
+
+        self._torso_calibrate(aquiStatic,dictRef,frameInit,frameEnd,options=options)
+        self._torso_Anatomicalcalibrate(aquiStatic, dictAnatomic,frameInit,frameEnd)
+
+        self._clavicle_calibrate("Left",aquiStatic,dictRef,frameInit,frameEnd,options=options)
+        self._clavicle_Anatomicalcalibrate("Left",aquiStatic, dictAnatomic,frameInit,frameEnd)
+
+        self._head_calibrate(aquiStatic,dictRef,frameInit,frameEnd,options=options)
+        self._head_AnatomicalCalibrate(aquiStatic, dictAnatomic,frameInit,frameEnd)
+
+        self._constructArmVirtualMarkers("Left", aquiStatic)
+
+        self._upperArm_calibrate("Left",aquiStatic, dictRef,frameInit,frameEnd, options=options)
+        self._foreArm_calibrate("Left",aquiStatic, dictRef,frameInit,frameEnd, options=options)
+
+        self._upperArm_Anatomicalcalibrate("Left",aquiStatic, dictAnatomic,frameInit,frameEnd)
+        self._foreArm_Anatomicalcalibrate("Left",aquiStatic, dictAnatomic,frameInit,frameEnd)
+
+        self._hand_calibrate("Left",aquiStatic, dictRef,frameInit,frameEnd, options=options)
+        self._hand_Anatomicalcalibrate("Left",aquiStatic, dictAnatomic,frameInit,frameEnd)
+
+
+    # ---- Technical Referential Calibration
+    def _head_calibrate(self,aquiStatic, dictRef,frameInit,frameEnd, options=None):
+        """
+            Construct the Technical Coordinate system of the pelvis.
+
+            :Parameters:
+               - `aquiStatic` (btkAcquisition) - btkAcquisition instance from a static c3d
+               - `dictRef` (dict) - dictionnary reporting markers and sequence use for building Technical referentials
+               - `frameInit` (dict) - first frame
+               - `frameEnd` (dict) - end frame
+               - `options` (dict) - use to pass options
+
+        """
+
+        pfn = aquiStatic.GetPointFrameNumber()
+
+
+        if "markerDiameter" in options.keys():
+            logging.debug(" option (markerDiameter) found ")
+            markerDiameter = options["markerDiameter"]
+        else:
+            markerDiameter=14.0
+
+        if "basePlate" in options.keys():
+            logging.debug(" option (basePlate) found ")
+            basePlate = options["basePlate"]
+        else:
+            basePlate=2.0
+
+        seg=self.getSegment("Head")
+        seg.resetMarkerLabels()
+
+        # ---  additional markers and Update of the marker segment list
+        # new markers (head)
+        valmFH=(aquiStatic.GetPoint("LFHD").GetValues() + aquiStatic.GetPoint("RFHD").GetValues()) / 2.0
+        btkTools.smartAppendPoint(aquiStatic,"midFH",valmFH,desc="")
+
+        valmBH=(aquiStatic.GetPoint("LBHD").GetValues() + aquiStatic.GetPoint("RBHD").GetValues()) / 2.0
+        btkTools.smartAppendPoint(aquiStatic,"midBH",valmBH,desc="")
+
+        valmHC=(valmFH+valmBH) / 2.0
+        btkTools.smartAppendPoint(aquiStatic,"HC",valmHC,desc="")
+
+        seg.addCalibrationMarkerLabel("midFH")
+        seg.addCalibrationMarkerLabel("midBH")
+        seg.addCalibrationMarkerLabel("HC")
+
+        # --- Construction of the technical referential
+        tf=seg.getReferential("TF")
+
+        #   referential construction
+        pt1=aquiStatic.GetPoint(str(dictRef["Head"]["TF"]['labels'][0])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        pt2=aquiStatic.GetPoint(str(dictRef["Head"]["TF"]['labels'][1])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        pt3=aquiStatic.GetPoint(str(dictRef["Head"]["TF"]['labels'][2])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        ptOrigin=aquiStatic.GetPoint(str(dictRef["Head"]["TF"]['labels'][3])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        a1=(pt2-pt1)
+        a1=a1/np.linalg.norm(a1)
+
+        v=(pt3-pt1)
+        v=v/np.linalg.norm(v)
+
+        a2=np.cross(a1,v)
+        a2=a2/np.linalg.norm(a2)
+
+        x,y,z,R=frame.setFrameData(a1,a2,dictRef["Head"]["TF"]['sequence'])
+
+        tf.static.m_axisX=x
+        tf.static.m_axisY=y
+        tf.static.m_axisZ=z
+        tf.static.setRotation(R)
+        tf.static.setTranslation(ptOrigin)
+
+        y,x,z = euler.euler_yxz(R)
+
+        if ("headHorizontal" in options.keys() and options["headHorizontal"]):
+            self.mp_computed["HeadOffset"] =  np.rad2deg(y)
+        else:
+            self.mp_computed["HeadOffset"] = 0.0
+
+
+        #nodes
+        for label in seg.m_tracking_markers:
+            globalPosition=aquiStatic.GetPoint(str(label)).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+            tf.static.addNode(label,globalPosition,positionType="Global")
+
+        for label in seg.m_calibration_markers:
+            globalPosition=aquiStatic.GetPoint(str(label)).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+            tf.static.addNode(label,globalPosition,positionType="Global")
+
+    def _head_AnatomicalCalibrate(self,aquiStatic, dictAnatomic,frameInit,frameEnd, options=None):
+
+        seg=self.getSegment("Head")
+
+        # --- Construction of the anatomical Referential
+        pt1=aquiStatic.GetPoint(str(dictAnatomic["Head"]['labels'][0])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        pt2=aquiStatic.GetPoint(str(dictAnatomic["Head"]['labels'][1])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        pt3=aquiStatic.GetPoint(str(dictAnatomic["Head"]['labels'][2])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        ptOrigin=aquiStatic.GetPoint(str(dictAnatomic["Head"]['labels'][3])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        a1=(pt2-pt1)
+        a1=a1/np.linalg.norm(a1)
+
+        v=(pt3-pt1)
+        v=v/np.linalg.norm(v)
+
+        a2=np.cross(a1,v)
+        a2=a2/np.linalg.norm(a2)
+
+        x,y,z,R=frame.setFrameData(a1,a2,dictAnatomic["Head"]['sequence'])
+
+        seg.anatomicalFrame.static.m_axisX=x
+        seg.anatomicalFrame.static.m_axisY=y
+        seg.anatomicalFrame.static.m_axisZ=z
+        seg.anatomicalFrame.static.setRotation(R)
+        seg.anatomicalFrame.static.setTranslation(ptOrigin)
+
+        # # --- relative rotation Technical Anatomical
+
+        offset =  -1.0*np.deg2rad(self.mp_computed["HeadOffset"])
+
+        rot = np.eye(3,3)
+        rot[0,0] = np.cos(offset)
+        rot[0,2] =  np.sin(offset)
+        rot[2,0] = - np.sin(offset)
+        rot[2,2] = np.cos(offset)
+        #
+
+        R2 = np.dot(R,rot)
+        seg.anatomicalFrame.static.setRotation(R2)
+
+        tf = seg.getReferential("TF")
+        tf.setRelativeMatrixAnatomic( np.dot(tf.static.getRotation().T,seg.anatomicalFrame.static.getRotation()))
+
+
+        # --- node manager
+        for node in seg.getReferential("TF").static.getNodes():
+            seg.anatomicalFrame.static.addNode(node.getLabel(),node.getGlobal(),positionType="Global", desc = node.getDescription())
+
+        # length
+        top = seg.anatomicalFrame.static.getNode_byLabel("midFH").m_local
+        bottom = seg.anatomicalFrame.static.getNode_byLabel("midBH").m_local
+        seg.setLength(np.linalg.norm(top-bottom))
+
+    def _torso_calibrate(self,aquiStatic, dictRef,frameInit,frameEnd, options=None):
+        """
+            Construct the Technical Coordinate system of the pelvis.
+
+            :Parameters:
+               - `aquiStatic` (btkAcquisition) - btkAcquisition instance from a static c3d
+               - `dictRef` (dict) - dictionnary reporting markers and sequence use for building Technical referentials
+               - `frameInit` (dict) - first frame
+               - `frameEnd` (dict) - end frame
+               - `options` (dict) - use to pass options
+
+        """
+
+        pfn = aquiStatic.GetPointFrameNumber()
+
+
+
+        if "markerDiameter" in options.keys():
+            logging.debug(" option (markerDiameter) found ")
+            markerDiameter = options["markerDiameter"]
+        else:
+            markerDiameter=14.0
+
+        if "basePlate" in options.keys():
+            logging.debug(" option (basePlate) found ")
+            basePlate = options["basePlate"]
+        else:
+            basePlate=2.0
+
+        seg=self.getSegment("Thorax")
+        seg.resetMarkerLabels()
+
+        # ---  additional markers and Update of the marker segment list
+        valTop=(aquiStatic.GetPoint("CLAV").GetValues() + aquiStatic.GetPoint("C7").GetValues()) / 2.0
+        btkTools.smartAppendPoint(aquiStatic,"midTop",valTop,desc="")
+
+        valBottom=(aquiStatic.GetPoint("STRN").GetValues() + aquiStatic.GetPoint("T10").GetValues()) / 2.0
+        btkTools.smartAppendPoint(aquiStatic,"midBottom",valBottom,desc="")
+
+        valFront=(aquiStatic.GetPoint("STRN").GetValues() + aquiStatic.GetPoint("CLAV").GetValues()) / 2.0
+        btkTools.smartAppendPoint(aquiStatic,"midFront",valFront,desc="")
+
+
+        seg.addCalibrationMarkerLabel("midTop")
+        seg.addCalibrationMarkerLabel("midBottom")
+        seg.addCalibrationMarkerLabel("midFront")
+
+        # --- Construction of the technical referential
+        tf=seg.getReferential("TF")
+
+        #   referential construction
+        pt1=aquiStatic.GetPoint(str(dictRef["Thorax"]["TF"]['labels'][0])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        pt2=aquiStatic.GetPoint(str(dictRef["Thorax"]["TF"]['labels'][1])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        pt3=aquiStatic.GetPoint(str(dictRef["Thorax"]["TF"]['labels'][2])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        ptOrigin=aquiStatic.GetPoint(str(dictRef["Thorax"]["TF"]['labels'][3])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        a1=(pt2-pt1)
+        a1=a1/np.linalg.norm(a1)
+
+        v=(pt3-pt1)
+        v=v/np.linalg.norm(v)
+
+        a2=np.cross(a1,v)
+        a2=a2/np.linalg.norm(a2)
+
+        x,y,z,R=frame.setFrameData(a1,a2,dictRef["Thorax"]["TF"]['sequence'])
+
+        tf.static.m_axisX=x
+        tf.static.m_axisY=y
+        tf.static.m_axisZ=z
+        tf.static.setRotation(R)
+        tf.static.setTranslation(ptOrigin)
+
+        OT = ptOrigin + -1.0*(markerDiameter/2.0)* tf.static.m_axisX # see AGWF
+        btkTools.smartAppendPoint(aquiStatic,"OT", OT* np.ones((pfn,3)), desc="")
+
+         # shoulder joints
+        LSHO=aquiStatic.GetPoint(str("LSHO")).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        LVWM = np.cross((LSHO - OT ),tf.static.m_axisX ) + LSHO
+
+        btkTools.smartAppendPoint(aquiStatic,"LVWM", LVWM* np.ones((pfn,3)),desc="")
+        LSJC = modelDecorator.chord( -1.0* (self.mp["LeftShoulderOffset"]+ markerDiameter/2.0),LSHO,OT,LVWM, beta=0 )
+
+        RSHO=aquiStatic.GetPoint(str("RSHO")).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        RVWM = np.cross(( tf.static.m_axisX ),( OT-RSHO )) + RSHO
+        btkTools.smartAppendPoint(aquiStatic,"RVWM", RVWM* np.ones((pfn,3)),desc="")
+        RSJC =  modelDecorator.chord( self.mp["RightShoulderOffset"]+ markerDiameter/2.0 ,RSHO,OT,RVWM, beta=0 )
+
+        # left
+        if tf.static.isNodeExist("LSJC"):
+            nodeLSJC = tf.static.getNode_byLabel("LSJC")
+        else:
+            tf.static.addNode("LSJC_cgm1",LSJC,positionType="Global",desc = "chord")
+            tf.static.addNode("LSJC",LSJC,positionType="Global",desc = "chord")
+            nodeLSJC = tf.static.getNode_byLabel("LSJC")
+
+        btkTools.smartAppendPoint(aquiStatic,"LSJC",
+                    nodeLSJC.m_global* np.ones((pfn,3)),
+                    desc=nodeLSJC.m_desc)
+
+        # right
+        if tf.static.isNodeExist("RSJC"):
+            nodeRSJC = tf.static.getNode_byLabel("RSJC")
+        else:
+            tf.static.addNode("RSJC_cgm1",RSJC,positionType="Global",desc = "chord")
+            tf.static.addNode("RSJC",RSJC,positionType="Global",desc = "chord")
+            nodeRSJC = tf.static.getNode_byLabel("RSJC")
+
+        btkTools.smartAppendPoint(aquiStatic,"RSJC",
+                    nodeRSJC.m_global* np.ones((pfn,3)),
+                    desc=nodeRSJC.m_desc)
+
+
+        #nodes
+        for label in seg.m_tracking_markers:
+            globalPosition=aquiStatic.GetPoint(str(label)).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+            tf.static.addNode(label,globalPosition,positionType="Global")
+
+        for label in seg.m_calibration_markers:
+            globalPosition=aquiStatic.GetPoint(str(label)).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+            tf.static.addNode(label,globalPosition,positionType="Global")
+
+
+    def _torso_Anatomicalcalibrate(self,aquiStatic, dictAnatomic,frameInit,frameEnd):
+
+        """
+            Construct the Anatomical Coordinate system of the pelvis.
+
+            :Parameters:
+               - `aquiStatic` (btkAcquisition) - btkAcquisition instance from a static c3d
+               - `dictAnatomic` (dict) - dictionnary reporting markers and sequence use for building Anatomical coordinate system
+               - `frameInit` (dict) - first frame
+               - `frameEnd` (dict) - end frame
+
+
+        """
+
+        seg=self.getSegment("Thorax")
+
+        # --- Construction of the anatomical Referential
+        pt1=aquiStatic.GetPoint(str(dictAnatomic["Thorax"]['labels'][0])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        pt2=aquiStatic.GetPoint(str(dictAnatomic["Thorax"]['labels'][1])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        pt3=aquiStatic.GetPoint(str(dictAnatomic["Thorax"]['labels'][2])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        ptOrigin=aquiStatic.GetPoint(str(dictAnatomic["Thorax"]['labels'][3])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        a1=(pt2-pt1)
+        a1=a1/np.linalg.norm(a1)
+
+        v=(pt3-pt1)
+        v=v/np.linalg.norm(v)
+
+        a2=np.cross(a1,v)
+        a2=a2/np.linalg.norm(a2)
+
+        x,y,z,R=frame.setFrameData(a1,a2,dictAnatomic["Thorax"]['sequence'])
+
+        seg.anatomicalFrame.static.m_axisX=x
+        seg.anatomicalFrame.static.m_axisY=y
+        seg.anatomicalFrame.static.m_axisZ=z
+        seg.anatomicalFrame.static.setRotation(R)
+        seg.anatomicalFrame.static.setTranslation(ptOrigin)
+
+        # --- relative rotation Technical Anatomical
+        tf=seg.getReferential("TF")
+        tf.setRelativeMatrixAnatomic( np.dot(tf.static.getRotation().T,seg.anatomicalFrame.static.getRotation()))
+
+
+        # --- node manager
+        for node in seg.getReferential("TF").static.getNodes():
+            seg.anatomicalFrame.static.addNode(node.getLabel(),node.getGlobal(),positionType="Global", desc = node.getDescription())
+
+        # length
+        top = seg.anatomicalFrame.static.getNode_byLabel("midTop").m_local
+        bottom = seg.anatomicalFrame.static.getNode_byLabel("midBottom").m_local
+        seg.setLength(np.linalg.norm(top-bottom))
+
+    def _clavicle_calibrate(self,side, aquiStatic, dictRef,frameInit,frameEnd, options=None):
+
+        if side == "Left":
+            prefix ="L"
+
+        segname = side + " " +"Clavicle"
+        seg=self.getSegment(segname)
+        seg.resetMarkerLabels()
+
+        # --- Construction of the technical referential
+        tf=seg.getReferential("TF")
+
+        #   referential construction
+        pt1=aquiStatic.GetPoint(str(dictRef[segname]["TF"]['labels'][0])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        pt2=aquiStatic.GetPoint(str(dictRef[segname]["TF"]['labels'][1])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        pt3=aquiStatic.GetPoint(str(dictRef[segname]["TF"]['labels'][2])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        ptOrigin=aquiStatic.GetPoint(str(dictRef[segname]["TF"]['labels'][3])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        a1=(pt2-pt1)
+        a1=a1/np.linalg.norm(a1)
+
+        v=(pt3-pt1)
+        v=v/np.linalg.norm(v)
+
+        a2=np.cross(a1,v)
+        a2=a2/np.linalg.norm(a2)
+
+        x,y,z,R=frame.setFrameData(a1,a2,dictRef[segname]["TF"]['sequence'])
+
+        tf.static.m_axisX=x
+        tf.static.m_axisY=y
+        tf.static.m_axisZ=z
+        tf.static.setRotation(R)
+        tf.static.setTranslation(ptOrigin)
+
+        # for label in seg.m_tracking_markers:
+        #     globalPosition=aquiStatic.GetPoint(str(label)).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        #     tf.static.addNode(label,globalPosition,positionType="Global")
+        #
+        # for label in seg.m_calibration_markers:
+        #     globalPosition=aquiStatic.GetPoint(str(label)).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+        #     tf.static.addNode(label,globalPosition,positionType="Global")
+
+    def _clavicle_Anatomicalcalibrate(self,side,aquiStatic, dictAnatomic,frameInit,frameEnd):
+
+        if side == "Left":
+            prefix ="L"
+
+
+        seg=self.getSegment(side+" Clavicle")
+
+        # --- Construction of the anatomical Referential
+        pt1=aquiStatic.GetPoint(str(dictAnatomic[side+" Clavicle"]['labels'][0])).GetValues()[frameInit:frameEnd,:].mean(axis=0)#
+        pt2=aquiStatic.GetPoint(str(dictAnatomic[side+" Clavicle"]['labels'][1])).GetValues()[frameInit:frameEnd,:].mean(axis=0)#
+        pt3=aquiStatic.GetPoint(str(dictAnatomic[side+" Clavicle"]['labels'][2])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        ptOrigin=aquiStatic.GetPoint(str(dictAnatomic[side+" Clavicle"]['labels'][3])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        a1=(pt2-pt1)
+        a1=a1/np.linalg.norm(a1)
+
+        v=(pt3-pt1)
+        v=v/np.linalg.norm(v)
+
+        a2=np.cross(a1,v)
+        a2=a2/np.linalg.norm(a2)
+
+        x,y,z,R=frame.setFrameData(a1,a2,dictAnatomic[side+" Clavicle"]['sequence'])
+
+        seg.anatomicalFrame.static.m_axisX=x
+        seg.anatomicalFrame.static.m_axisY=y
+        seg.anatomicalFrame.static.m_axisZ=z
+        seg.anatomicalFrame.static.setRotation(R)
+        seg.anatomicalFrame.static.setTranslation(ptOrigin)
+
+        # --- relative rotation Technical Anatomical
+        tf=seg.getReferential("TF")
+        tf.setRelativeMatrixAnatomic( np.dot(tf.static.getRotation().T,seg.anatomicalFrame.static.getRotation()))
+
+
+        # --- node manager
+        # for node in seg.getReferential("TF").static.getNodes():
+        #     seg.anatomicalFrame.static.addNode(node.getLabel(),node.getGlobal(),positionType="Global", desc = node.getDescription())
+        #
+
+
+    def _constructArmVirtualMarkers(self,side, aqui):
+
+        if side == "Left":
+            prefix ="L"
+            s= -1.0
+
+        # mid wrist
+        midwrist=(aqui.GetPoint(prefix+"WRA").GetValues() + aqui.GetPoint(prefix+"WRB").GetValues()) / 2.0
+        btkTools.smartAppendPoint(aqui,prefix+"MWP",midwrist,desc="")
+
+        # virtual wand ( need SJC !!)
+        pfn = aqui.GetPointFrameNumber()
+        SJC = aqui.GetPoint(prefix+"SJC").GetValues()
+
+        LHE=aqui.GetPoint(prefix+"ELB").GetValues()
+        MWP=aqui.GetPoint(prefix+"MWP").GetValues()
+
+        CVMvalues = np.zeros((pfn,3))
+
+        for i in range(0,pfn):
+            CVM = s*np.cross((MWP[i,:]-LHE[i,:]),(SJC[i,:]-LHE[i,:]))
+            CVM = CVM / np.linalg.norm(CVM)
+            CVMvalues[i,:] = LHE[i,:] + 50.0*CVM
+
+        btkTools.smartAppendPoint(aqui,prefix+"CVM", CVMvalues, desc="")
+
+
+    def _upperArm_calibrate(self,side, aquiStatic, dictRef,frameInit,frameEnd, options=None):
+
+        if side == "Left":
+            prefix ="L"
+
+        pfn = aquiStatic.GetPointFrameNumber()
+
+        if "markerDiameter" in options.keys():
+            logging.debug(" option (markerDiameter) found ")
+            markerDiameter = options["markerDiameter"]
+        else:
+            markerDiameter=14.0
+
+        if "basePlate" in options.keys():
+            logging.debug(" option (basePlate) found ")
+            basePlate = options["basePlate"]
+        else:
+            basePlate=2.0
+
+        segname = side + " " +"UpperArm"
+        seg=self.getSegment(segname)
+        seg.resetMarkerLabels()
+
+        # --- Construction of the technical referential
+        tf=seg.getReferential("TF")
+
+        #   referential construction
+        pt1=aquiStatic.GetPoint(str(dictRef[segname]["TF"]['labels'][0])).GetValues()[frameInit:frameEnd,:].mean(axis=0) #ELB
+        pt2=aquiStatic.GetPoint(str(dictRef[segname]["TF"]['labels'][1])).GetValues()[frameInit:frameEnd,:].mean(axis=0) #SJC
+        pt3=aquiStatic.GetPoint(str(dictRef[segname]["TF"]['labels'][2])).GetValues()[frameInit:frameEnd,:].mean(axis=0) #CVM
+
+        ptOrigin=aquiStatic.GetPoint(str(dictRef[segname]["TF"]['labels'][3])).GetValues()[frameInit:frameEnd,:].mean(axis=0) #ELB
+
+        a1=(pt2-pt1)
+        a1=a1/np.linalg.norm(a1)
+
+        v=(pt3-pt1)
+        v=v/np.linalg.norm(v)
+
+        a2=np.cross(a1,v)
+        a2=a2/np.linalg.norm(a2)
+
+        x,y,z,R=frame.setFrameData(a1,a2,dictRef[segname]["TF"]['sequence'])
+
+        tf.static.m_axisX=x
+        tf.static.m_axisY=y
+        tf.static.m_axisZ=z
+        tf.static.setRotation(R)
+        tf.static.setTranslation(ptOrigin)
+
+        # comuptation of EJC ( need virtual wand)
+        EJC =  modelDecorator.chord( (self.mp[side+"ElbowWidth"]+ markerDiameter)/2.0 ,pt1,pt2,pt3, beta=0 ) #ELB,SJC,CVM
+
+        if tf.static.isNodeExist(prefix +"EJC"):
+            nodeLEJC = tf.static.getNode_byLabel(prefix+"EJC")
+        else:
+            tf.static.addNode(prefix+"EJC_cgm1",EJC,positionType="Global",desc = "chord")
+            tf.static.addNode(prefix+"EJC",EJC,positionType="Global",desc = "chord")
+            nodeEJC = tf.static.getNode_byLabel(prefix+"EJC")
+
+        btkTools.smartAppendPoint(aquiStatic,prefix+"EJC",
+                    nodeEJC.m_global* np.ones((pfn,3)),
+                    desc=nodeEJC.m_desc)
+
+        for label in seg.m_tracking_markers:
+            globalPosition=aquiStatic.GetPoint(str(label)).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+            tf.static.addNode(label,globalPosition,positionType="Global")
+
+        for label in seg.m_calibration_markers:
+            globalPosition=aquiStatic.GetPoint(str(label)).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+            tf.static.addNode(label,globalPosition,positionType="Global")
+
+
+    def _upperArm_Anatomicalcalibrate(self,side, aquiStatic, dictAnatomic,frameInit,frameEnd):
+
+        """
+            Construct the Anatomical Coordinate system of the pelvis.
+
+            :Parameters:
+               - `aquiStatic` (btkAcquisition) - btkAcquisition instance from a static c3d
+               - `dictAnatomic` (dict) - dictionnary reporting markers and sequence use for building Anatomical coordinate system
+               - `frameInit` (dict) - first frame
+               - `frameEnd` (dict) - end frame
+
+
+        """
+        if side == "Left":
+            prefix ="L"
+
+        segname = side + " " +"UpperArm"
+
+        seg=self.getSegment(segname)
+
+        # --- Construction of the anatomical Referential
+        pt1=aquiStatic.GetPoint(str(dictAnatomic[segname]['labels'][0])).GetValues()[frameInit:frameEnd,:].mean(axis=0) #EJC
+        pt2=aquiStatic.GetPoint(str(dictAnatomic[segname]['labels'][1])).GetValues()[frameInit:frameEnd,:].mean(axis=0) #SJC
+        pt3=aquiStatic.GetPoint(str(dictAnatomic[segname]['labels'][2])).GetValues()[frameInit:frameEnd,:].mean(axis=0) #WJC
+
+        ptOrigin=aquiStatic.GetPoint(str(dictAnatomic[segname]['labels'][3])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        a1=(pt2-pt1)
+        a1=a1/np.linalg.norm(a1)
+
+        v=(pt3-pt1)
+        v=v/np.linalg.norm(v)
+
+        a2=np.cross(a1,v)
+        a2=a2/np.linalg.norm(a2)
+
+        x,y,z,R=frame.setFrameData(a1,a2,dictAnatomic[segname]['sequence'])
+
+        seg.anatomicalFrame.static.m_axisX=x
+        seg.anatomicalFrame.static.m_axisY=y
+        seg.anatomicalFrame.static.m_axisZ=z
+        seg.anatomicalFrame.static.setRotation(R)
+        seg.anatomicalFrame.static.setTranslation(ptOrigin)
+
+        # --- relative rotation Technical Anatomical
+        tf=seg.getReferential("TF")
+        tf.setRelativeMatrixAnatomic( np.dot(tf.static.getRotation().T,seg.anatomicalFrame.static.getRotation()))
+
+
+        # --- node manager
+        for node in seg.getReferential("TF").static.getNodes():
+            seg.anatomicalFrame.static.addNode(node.getLabel(),node.getGlobal(),positionType="Global", desc = node.getDescription())
+
+        # length
+        top = seg.anatomicalFrame.static.getNode_byLabel(prefix+"SJC").m_local
+        bottom = seg.anatomicalFrame.static.getNode_byLabel(prefix+"EJC").m_local
+        seg.setLength(np.linalg.norm(top-bottom))
+
+    def _foreArm_calibrate(self,side,aquiStatic, dictRef,frameInit,frameEnd, options=None):
+
+        if side == "Left":
+            prefix ="L"
+            s= -1.0
+
+        pfn = aquiStatic.GetPointFrameNumber()
+
+        if "markerDiameter" in options.keys():
+            logging.debug(" option (markerDiameter) found ")
+            markerDiameter = options["markerDiameter"]
+        else:
+            markerDiameter=14.0
+
+        if "basePlate" in options.keys():
+            logging.debug(" option (basePlate) found ")
+            basePlate = options["basePlate"]
+        else:
+            basePlate=2.0
+
+        seg=self.getSegment(side +" ForeArm")
+        seg.resetMarkerLabels()
+
+        # --- Construction of the technical referential
+        tf=seg.getReferential("TF")
+
+        #   referential construction
+        pt1=aquiStatic.GetPoint(str(dictRef[side +" ForeArm"]["TF"]['labels'][0])).GetValues()[frameInit:frameEnd,:].mean(axis=0)#US (WRB)
+        pt2=aquiStatic.GetPoint(str(dictRef[side +" ForeArm"]["TF"]['labels'][1])).GetValues()[frameInit:frameEnd,:].mean(axis=0)#EJC
+        pt3=aquiStatic.GetPoint(str(dictRef[side +" ForeArm"]["TF"]['labels'][2])).GetValues()[frameInit:frameEnd,:].mean(axis=0)#RS (WRW)
+
+        ptOrigin=aquiStatic.GetPoint(str(dictRef[side +" ForeArm"]["TF"]['labels'][3])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        a1=(pt2-pt1)
+        a1=a1/np.linalg.norm(a1)
+
+        v=(pt3-pt1)
+        v=v/np.linalg.norm(v)
+
+        a2=np.cross(a1,v)
+        a2=a2/np.linalg.norm(a2)
+
+        x,y,z,R=frame.setFrameData(a1,a2,dictRef[side +" ForeArm"]["TF"]['sequence'])
+
+        tf.static.m_axisX=x
+        tf.static.m_axisY=y
+        tf.static.m_axisZ=z
+        tf.static.setRotation(R)
+        tf.static.setTranslation(ptOrigin)
+
+        # comuptation of WJC ( need virtual wand)
+        EJC = pt2
+        US=pt3
+        RS=pt1
+
+        MWP=aquiStatic.GetPoint(prefix+"MWP").GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        WJCaxis = np.cross((US-RS),(EJC-MWP))
+        WJCaxis = WJCaxis / np.linalg.norm(WJCaxis)
+        WJC =MWP +  (s*(self.mp[side +"WristWidth"]+markerDiameter)/2.0)*WJCaxis
+
+        if tf.static.isNodeExist(prefix+"WJC"):
+            nodeLWJC = tf.static.getNode_byLabel(prefix+"WJC")
+        else:
+            tf.static.addNode(prefix+"WJC_cgm1",WJC,positionType="Global",desc = "midCgm1")
+            tf.static.addNode(prefix+"WJC",WJC,positionType="Global",desc = "midCgm1")
+            nodeWJC = tf.static.getNode_byLabel(prefix+"WJC")
+
+        btkTools.smartAppendPoint(aquiStatic,prefix+"WJC",
+                    nodeWJC.m_global* np.ones((pfn,3)),
+                    desc=nodeWJC.m_desc)
+
+        for label in seg.m_tracking_markers:
+            globalPosition=aquiStatic.GetPoint(str(label)).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+            tf.static.addNode(label,globalPosition,positionType="Global")
+
+        for label in seg.m_calibration_markers:
+            globalPosition=aquiStatic.GetPoint(str(label)).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+            tf.static.addNode(label,globalPosition,positionType="Global")
+
+    def _foreArm_Anatomicalcalibrate(self,side,aquiStatic, dictAnatomic,frameInit,frameEnd):
+
+        """
+            Construct the Anatomical Coordinate system of the pelvis.
+
+            :Parameters:
+               - `aquiStatic` (btkAcquisition) - btkAcquisition instance from a static c3d
+               - `dictAnatomic` (dict) - dictionnary reporting markers and sequence use for building Anatomical coordinate system
+               - `frameInit` (dict) - first frame
+               - `frameEnd` (dict) - end frame
+
+
+        """
+        if side == "Left":
+            prefix ="L"
+
+        seg=self.getSegment(side+" ForeArm")
+
+        # --- Construction of the anatomical Referential
+        pt1=aquiStatic.GetPoint(str(dictAnatomic[side+" ForeArm"]['labels'][0])).GetValues()[frameInit:frameEnd,:].mean(axis=0)#WJC
+        pt2=aquiStatic.GetPoint(str(dictAnatomic[side+" ForeArm"]['labels'][1])).GetValues()[frameInit:frameEnd,:].mean(axis=0)#EJC
+
+        if dictAnatomic[side+" ForeArm"]['labels'][2] is not None:
+            pt3=aquiStatic.GetPoint(str(dictAnatomic[side+" ForeArm"]['labels'][2])).GetValues()[frameInit:frameEnd,:].mean(axis=0)#Not used
+
+        ptOrigin=aquiStatic.GetPoint(str(dictAnatomic[side+" ForeArm"]['labels'][3])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        a1=(pt2-pt1)
+        a1=a1/np.linalg.norm(a1)
+
+        if dictAnatomic[side+" ForeArm"]['labels'][2] is not None:
+            v=(pt3-pt1)
+            v=v/np.linalg.norm(v)
+        else:
+            v=self.getSegment(side+ " UpperArm").anatomicalFrame.static.m_axisY
+
+        a2=np.cross(a1,v)
+        a2=a2/np.linalg.norm(a2)
+
+        x,y,z,R=frame.setFrameData(a1,a2,dictAnatomic[side+" ForeArm"]['sequence'])
+
+        seg.anatomicalFrame.static.m_axisX=x
+        seg.anatomicalFrame.static.m_axisY=y
+        seg.anatomicalFrame.static.m_axisZ=z
+        seg.anatomicalFrame.static.setRotation(R)
+        seg.anatomicalFrame.static.setTranslation(ptOrigin)
+
+        # --- relative rotation Technical Anatomical
+        tf=seg.getReferential("TF")
+        tf.setRelativeMatrixAnatomic( np.dot(tf.static.getRotation().T,seg.anatomicalFrame.static.getRotation()))
+
+
+        # --- node manager
+        for node in seg.getReferential("TF").static.getNodes():
+            seg.anatomicalFrame.static.addNode(node.getLabel(),node.getGlobal(),positionType="Global", desc = node.getDescription())
+
+        # length
+        top = seg.anatomicalFrame.static.getNode_byLabel(prefix+"EJC").m_local
+        bottom = seg.anatomicalFrame.static.getNode_byLabel(prefix+"WJC").m_local
+        seg.setLength(np.linalg.norm(top-bottom))
+
+
+    def _hand_calibrate(self,side, aquiStatic, dictRef,frameInit,frameEnd, options=None):
+
+        if side == "Left":
+            prefix ="L"
+
+        pfn = aquiStatic.GetPointFrameNumber()
+
+        if "markerDiameter" in options.keys():
+            logging.debug(" option (markerDiameter) found ")
+            markerDiameter = options["markerDiameter"]
+        else:
+            markerDiameter=14.0
+
+        if "basePlate" in options.keys():
+            logging.debug(" option (basePlate) found ")
+            basePlate = options["basePlate"]
+        else:
+            basePlate=2.0
+
+        seg=self.getSegment(side +" Hand")
+        seg.resetMarkerLabels()
+
+        # --- Construction of the technical referential
+        tf=seg.getReferential("TF")
+
+        #   referential construction
+        pt1=aquiStatic.GetPoint(str(dictRef[side +" Hand"]["TF"]['labels'][0])).GetValues()[frameInit:frameEnd,:].mean(axis=0)#FIN
+        pt2=aquiStatic.GetPoint(str(dictRef[side +" Hand"]["TF"]['labels'][1])).GetValues()[frameInit:frameEnd,:].mean(axis=0)#WJC
+        pt3=aquiStatic.GetPoint(str(dictRef[side +" Hand"]["TF"]['labels'][2])).GetValues()[frameInit:frameEnd,:].mean(axis=0)#MWP
+
+        ptOrigin=aquiStatic.GetPoint(str(dictRef[side +" Hand"]["TF"]['labels'][3])).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+
+        a1=(pt2-pt1)
+        a1=a1/np.linalg.norm(a1)
+
+        v=(pt3-pt1)
+        v=v/np.linalg.norm(v)
+
+        a2=np.cross(a1,v)
+        a2=a2/np.linalg.norm(a2)
+
+        x,y,z,R=frame.setFrameData(a1,a2,dictRef[side +" Hand"]["TF"]['sequence'])
+
+        tf.static.m_axisX=x
+        tf.static.m_axisY=y
+        tf.static.m_axisZ=z
+        tf.static.setRotation(R)
+        tf.static.setTranslation(ptOrigin)
+
+        # comuptation of Hand Origin
+        HO =  modelDecorator.chord( (self.mp[side+"HandThickness"]+ markerDiameter)/2.0 ,pt1, pt2, pt3, beta=0 )
+
+        tf.static.addNode(prefix+"HO",HO,positionType="Global",desc = "ch1-handOrigin")
+        nodeHO = tf.static.getNode_byLabel(prefix+"HO")
+
+        btkTools.smartAppendPoint(aquiStatic,prefix +"HO",
+                nodeHO.m_global* np.ones((pfn,3)),
+                desc=nodeHO.m_desc)
+
+        for label in seg.m_tracking_markers:
+            globalPosition=aquiStatic.GetPoint(str(label)).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+            tf.static.addNode(label,globalPosition,positionType="Global")
+
+        for label in seg.m_calibration_markers:
+            globalPosition=aquiStatic.GetPoint(str(label)).GetValues()[frameInit:frameEnd,:].mean(axis=0)
+            tf.static.addNode(label,globalPosition,positionType="Global")
+
+
+    def _hand_Anatomicalcalibrate(self,side,aquiStatic, dictAnatomic,frameInit,frameEnd):
+
+        """
+            Construct the Anatomical Coordinate system of the pelvis.
+
+            :Parameters:
+               - `aquiStatic` (btkAcquisition) - btkAcquisition instance from a static c3d
+               - `dictAnatomic` (dict) - dictionnary reporting markers and sequence use for building Anatomical coordinate system
+               - `frameInit` (dict) - first frame
+               - `frameEnd` (dict) - end frame
+
+
+        """
+        if side == "Left":
+            prefix ="L"
+
+        seg=self.getSegment(side +" Hand")
+
+        # --- Construction of the anatomical Referential
+        pt1=aquiStatic.GetPoint(str(dictAnatomic[side +" Hand"]['labels'][0])).GetValues()[frameInit:frameEnd,:].mean(axis=0) # HO
+        pt2=aquiStatic.GetPoint(str(dictAnatomic[side +" Hand"]['labels'][1])).GetValues()[frameInit:frameEnd,:].mean(axis=0) #WJC
+        pt3=aquiStatic.GetPoint(str(dictAnatomic[side +" Hand"]['labels'][2])).GetValues()[frameInit:frameEnd,:].mean(axis=0) #MWP
+
+        ptOrigin=aquiStatic.GetPoint(str(dictAnatomic[side +" Hand"]['labels'][3])).GetValues()[frameInit:frameEnd,:].mean(axis=0) # HO
+
+        a1=(pt2-pt1)
+        a1=a1/np.linalg.norm(a1)
+
+        v=(pt3-pt1)
+        v=v/np.linalg.norm(v)
+
+        a2=np.cross(a1,v)
+        a2=a2/np.linalg.norm(a2)
+
+        x,y,z,R=frame.setFrameData(a1,a2,dictAnatomic[side +" Hand"]['sequence'])
+
+        seg.anatomicalFrame.static.m_axisX=x
+        seg.anatomicalFrame.static.m_axisY=y
+        seg.anatomicalFrame.static.m_axisZ=z
+        seg.anatomicalFrame.static.setRotation(R)
+        seg.anatomicalFrame.static.setTranslation(ptOrigin)
+
+        # --- relative rotation Technical Anatomical
+        tf=seg.getReferential("TF")
+        tf.setRelativeMatrixAnatomic( np.dot(tf.static.getRotation().T,seg.anatomicalFrame.static.getRotation()))
+
+        # --- node manager
+        for node in seg.getReferential("TF").static.getNodes():
+            seg.anatomicalFrame.static.addNode(node.getLabel(),node.getGlobal(),positionType="Global", desc = node.getDescription())
+
+        # length
+        top = seg.anatomicalFrame.static.getNode_byLabel(prefix+"WJC").m_local
+        bottom = seg.anatomicalFrame.static.getNode_byLabel(prefix+"HO").m_local
+        seg.setLength(2.0 * np.linalg.norm(top-bottom))
+
+
+    def computeMotion(self,aqui, dictRef,dictAnat, motionMethod,options=None ):
+        """
+        Compute Motion of both **Technical and Anatomical** coordinate systems
+
+        :Parameters:
+
+           - `aqui` (btkAcquisition) - acquisition instance of a dynamic trial
+           - `dictRef` (dict) - dictionnary reporting markers and sequence use for building Technical coordinate system
+           - `dictAnat` (dict) - dictionnary reporting markers and sequence use for building Anatomical coordinate system
+           - `motionMethod` (pyCGM2.enums) - method use to compute segment pose
+           - `options` (dict) - dictionnary use to pass options
+
+        """
+
+
+
+
+
+
+
+        if motionMethod == enums.motionMethod.Determinist: #cmf.motionMethod.Native:
+            self._thorax_motion(aqui, dictRef,dictAnat,options=options)
+            self._clavicle_motion("Left",aqui, dictRef,dictAnat,options=options)
+            self._head_motion(aqui, dictRef,dictAnat,options=options)
+
+            self._constructArmVirtualMarkers("Left", aqui)
+            self._upperArm_motion("Left",aqui, dictRef,dictAnat,options=options,   frameReconstruction="Technical")
+            self._foreArm_motion("Left",aqui, dictRef,dictAnat,options=options, frameReconstruction="Technical")
+            self._upperArm_motion("Left",aqui, dictRef,dictAnat,options=options,   frameReconstruction="Anatomical")
+            self._foreArm_motion("Left",aqui, dictRef,dictAnat,options=options, frameReconstruction="Anatomical")
+
+            self._hand_motion("Left",aqui, dictRef,dictAnat,options=options)
+
+
+    def _thorax_motion(self,aqui, dictRef,dictAnat,options=None):
+        """
+            Compute Motion of both Technical and Anatomical coordinate systems of the left thigh
+
+            :Parameters:
+               - `aqui` (btkAcquisition) - acquisition instance of a dynamic trial
+               - `dictRef` (dict) - dictionnary reporting markers and sequence use for building Technical coordinate system
+               - `dictAnat` (dict) - dictionnary reporting markers and sequence use for building Anatomical coordinate system
+               - `options` (dict) - dictionnary use to pass options
+
+        """
+
+        if "markerDiameter" in options.keys():
+            logging.debug(" option (markerDiameter) found ")
+            markerDiameter = options["markerDiameter"]
+        else:
+            markerDiameter=14.0
+
+        if "basePlate" in options.keys():
+            logging.debug(" option (basePlate) found ")
+            basePlate = options["basePlate"]
+        else:
+            basePlate=2.0
+
+        seg=self.getSegment("Thorax")
+
+
+        # --- motion of the technical referential
+        seg.getReferential("TF").motion =[]   # reinit Technical Frame Motion ()
+
+        # additional markers
+        # new markers
+        valTop=(aqui.GetPoint("CLAV").GetValues() + aqui.GetPoint("C7").GetValues()) / 2.0
+        btkTools.smartAppendPoint(aqui,"midTop",valTop,desc="")
+
+        valBottom=(aqui.GetPoint("STRN").GetValues() + aqui.GetPoint("T10").GetValues()) / 2.0
+        btkTools.smartAppendPoint(aqui,"midBottom",valBottom,desc="")
+
+        valFront=(aqui.GetPoint("STRN").GetValues() + aqui.GetPoint("CLAV").GetValues()) / 2.0
+        btkTools.smartAppendPoint(aqui,"midFront",valFront,desc="")
+
+        # computation
+        LSJCvalues=np.zeros((aqui.GetPointFrameNumber(),3))
+        RSJCvalues=np.zeros((aqui.GetPointFrameNumber(),3))
+
+        LVWMvalues=np.zeros((aqui.GetPointFrameNumber(),3))
+        RVWMvalues=np.zeros((aqui.GetPointFrameNumber(),3))
+        OTvalues=np.zeros((aqui.GetPointFrameNumber(),3))
+
+        csFrame=frame.Frame()
+        for i in range(0,aqui.GetPointFrameNumber()):
+
+            pt1=aqui.GetPoint(str(dictRef["Thorax"]["TF"]['labels'][0])).GetValues()[i,:]
+            pt2=aqui.GetPoint(str(dictRef["Thorax"]["TF"]['labels'][1])).GetValues()[i,:]
+            pt3=aqui.GetPoint(str(dictRef["Thorax"]["TF"]['labels'][2])).GetValues()[i,:]
+            ptOrigin=aqui.GetPoint(str(dictRef["Thorax"]["TF"]['labels'][3])).GetValues()[i,:]
+
+
+            a1=(pt2-pt1)
+            a1=np.divide(a1,np.linalg.norm(a1))
+
+            v=(pt3-pt1)
+            v=np.divide(v,np.linalg.norm(v))
+
+            a2=np.cross(a1,v)
+            a2=np.divide(a2,np.linalg.norm(a2))
+
+            x,y,z,R=frame.setFrameData(a1,a2,dictRef["Thorax"]["TF"]['sequence'])
+
+            csFrame.m_axisX=x
+            csFrame.m_axisY=y
+            csFrame.m_axisZ=z
+            csFrame.setRotation(R)
+            csFrame.setTranslation(ptOrigin)
+
+            seg.getReferential("TF").addMotionFrame(copy.deepcopy(csFrame))
+
+            OT = ptOrigin + -1.0*(markerDiameter/2.0)*csFrame.m_axisX #
+            OTvalues[i,:] = OT
+
+            LSHO = aqui.GetPoint(str("LSHO")).GetValues()[i,:]
+            LVWM = np.cross((LSHO - OT ), csFrame.m_axisX ) + LSHO
+
+            LSJCvalues[i,:] = modelDecorator.chord( -1.0*(self.mp["LeftShoulderOffset"]+ markerDiameter/2.0) ,LSHO,OT,LVWM, beta=0 )
+            LVWMvalues[i,:] = LVWM
+
+        btkTools.smartAppendPoint(aqui,"OT",OTvalues,desc="")
+        btkTools.smartAppendPoint(aqui,"LVWM",LVWMvalues,desc="")
+
+        #btkTools.smartAppendPoint(aqui,"LKJC_Chord",LKJCvalues,desc="chord")
+
+        # --- LKJC
+        if  "useLeftSJCmarker" in options.keys():
+            LSJCvalues = aqui.GetPoint(options["useLeftSJCmarker"]).GetValues()
+            desc = aqui.GetPoint(options["useLeftSJCmarker"]).GetDescription()
+            btkTools.smartAppendPoint(aqui,"LSJC",LSJCvalues,desc=desc)
+
+        # final LKJC ( just check if KJC already exist)
+        if not btkTools.isPointExist(aqui,"LSJC"):
+            desc = seg.getReferential('TF').static.getNode_byLabel("LSJC").m_desc
+            #LKJCvalues = aqui.GetPoint("LKJC_Chord").GetValues()
+            btkTools.smartAppendPoint(aqui,"LSJC",LSJCvalues,desc=str("Chord-"+desc))
+
+
+
+        # --- motion of the anatomical referential
+        seg.anatomicalFrame.motion=[]
+
+        # additional markers
+        # NA
+        # computation
+        csFrame=frame.Frame()
+        for i in range(0,aqui.GetPointFrameNumber()):
+
+            pt1=aqui.GetPoint(str(dictAnat["Thorax"]['labels'][0])).GetValues()[i,:]
+            pt2=aqui.GetPoint(str(dictAnat["Thorax"]['labels'][1])).GetValues()[i,:]
+            pt3=aqui.GetPoint(str(dictAnat["Thorax"]['labels'][2])).GetValues()[i,:]
+            ptOrigin=aqui.GetPoint(str(dictAnat["Thorax"]['labels'][3])).GetValues()[i,:]
+
+
+            a1=(pt2-pt1)
+            a1=np.divide(a1,np.linalg.norm(a1))
+
+            v=(pt3-pt1)
+            v=np.divide(v,np.linalg.norm(v))
+
+            a2=np.cross(a1,v)
+            a2=np.divide(a2,np.linalg.norm(a2))
+
+            x,y,z,R=frame.setFrameData(a1,a2,dictAnat["Thorax"]['sequence'])
+
+
+            csFrame.m_axisX=x
+            csFrame.m_axisY=y
+            csFrame.m_axisZ=z
+            csFrame.setRotation(R)
+            csFrame.setTranslation(ptOrigin)
+
+            seg.anatomicalFrame.addMotionFrame(copy.deepcopy(csFrame))
+
+
+
+    def _clavicle_motion(self,side,aqui, dictRef,dictAnat,options=None):
+        """
+            Compute Motion of both Technical and Anatomical coordinate systems of the left thigh
+
+            :Parameters:
+               - `aqui` (btkAcquisition) - acquisition instance of a dynamic trial
+               - `dictRef` (dict) - dictionnary reporting markers and sequence use for building Technical coordinate system
+               - `dictAnat` (dict) - dictionnary reporting markers and sequence use for building Anatomical coordinate system
+               - `options` (dict) - dictionnary use to pass options
+
+        """
+        if side == "Left":
+            prefix = "L"
+
+
+        seg=self.getSegment(side+" Clavicle")
+
+
+        # --- motion of the technical referential
+        seg.getReferential("TF").motion =[]   # reinit Technical Frame Motion ()
+
+        # additional markers
+
+
+        csFrame=frame.Frame()
+        for i in range(0,aqui.GetPointFrameNumber()):
+
+            pt1=aqui.GetPoint(str(dictRef[side+" Clavicle"]["TF"]['labels'][0])).GetValues()[i,:]
+            pt2=aqui.GetPoint(str(dictRef[side+" Clavicle"]["TF"]['labels'][1])).GetValues()[i,:]
+            pt3=aqui.GetPoint(str(dictRef[side+" Clavicle"]["TF"]['labels'][2])).GetValues()[i,:]
+            ptOrigin=aqui.GetPoint(str(dictRef[side+" Clavicle"]["TF"]['labels'][3])).GetValues()[i,:]
+
+
+            a1=(pt2-pt1)
+            a1=np.divide(a1,np.linalg.norm(a1))
+
+            v=(pt3-pt1)
+            v=np.divide(v,np.linalg.norm(v))
+
+            a2=np.cross(a1,v)
+            a2=np.divide(a2,np.linalg.norm(a2))
+
+            x,y,z,R=frame.setFrameData(a1,a2,dictRef[side+" Clavicle"]["TF"]['sequence'])
+
+            csFrame.m_axisX=x
+            csFrame.m_axisY=y
+            csFrame.m_axisZ=z
+            csFrame.setRotation(R)
+            csFrame.setTranslation(ptOrigin)
+
+            seg.getReferential("TF").addMotionFrame(copy.deepcopy(csFrame))
+
+
+        # --- motion of the anatomical referential
+        seg.anatomicalFrame.motion=[]
+
+        # additional markers
+        # NA
+        # computation
+        csFrame=frame.Frame()
+        for i in range(0,aqui.GetPointFrameNumber()):
+
+            pt1=aqui.GetPoint(str(dictAnat[side+" Clavicle"]['labels'][0])).GetValues()[i,:]
+            pt2=aqui.GetPoint(str(dictAnat[side+" Clavicle"]['labels'][1])).GetValues()[i,:]
+            pt3=aqui.GetPoint(str(dictAnat[side+" Clavicle"]['labels'][2])).GetValues()[i,:]
+            ptOrigin=aqui.GetPoint(str(dictAnat[side+" Clavicle"]['labels'][3])).GetValues()[i,:]
+
+            a1=(pt2-pt1)
+            a1=np.divide(a1,np.linalg.norm(a1))
+
+            v=(pt3-pt1)
+            v=np.divide(v,np.linalg.norm(v))
+
+            a2=np.cross(a1,v)
+            a2=np.divide(a2,np.linalg.norm(a2))
+
+            x,y,z,R=frame.setFrameData(a1,a2,dictAnat[side+" Clavicle"]['sequence'])
+
+
+            csFrame.m_axisX=x
+            csFrame.m_axisY=y
+            csFrame.m_axisZ=z
+            csFrame.setRotation(R)
+            csFrame.setTranslation(ptOrigin)
+
+            seg.anatomicalFrame.addMotionFrame(copy.deepcopy(csFrame))
+
+
+    def _upperArm_motion(self,side,aqui, dictRef,dictAnat,options=None,frameReconstruction="Both"):
+        """
+            Compute Motion of both Technical and Anatomical coordinate systems of the left thigh
+
+            :Parameters:
+               - `aqui` (btkAcquisition) - acquisition instance of a dynamic trial
+               - `dictRef` (dict) - dictionnary reporting markers and sequence use for building Technical coordinate system
+               - `dictAnat` (dict) - dictionnary reporting markers and sequence use for building Anatomical coordinate system
+               - `options` (dict) - dictionnary use to pass options
+
+        """
+        if side == "Left":
+            prefix = "L"
+
+        if "markerDiameter" in options.keys():
+            logging.debug(" option (markerDiameter) found ")
+            markerDiameter = options["markerDiameter"]
+        else:
+            markerDiameter=14.0
+
+        if "basePlate" in options.keys():
+            logging.debug(" option (basePlate) found ")
+            basePlate = options["basePlate"]
+        else:
+            basePlate=2.0
+
+        seg=self.getSegment(side+" UpperArm")
+
+        if frameReconstruction == "Both" or frameReconstruction == "Technical":
+            # --- motion of the technical referential
+            seg.getReferential("TF").motion =[]   # reinit Technical Frame Motion ()
+
+            # additional markers
+
+            # CVMvalues=np.zeros((aqui.GetPointFrameNumber(),3))
+            # for i in range(0,aqui.GetPointFrameNumber()):
+            #     SJC = aqui.GetPoint(prefix+"SJC").GetValues()[i,:]
+            #     LHE=aqui.GetPoint(prefix+"ELB").GetValues()[i,:]
+            #     MWP=aqui.GetPoint(prefix+"MWP").GetValues()[i,:]
+            #
+            #
+            #     CVM = -1.0*np.cross((MWP-LHE),(SJC-LHE))
+            #     CVM = CVM / np.linalg.norm(CVM)
+            #     CVMvalues[i,:] =LHE + 50.0*CVM
+            #
+            # btkTools.smartAppendPoint(aqui,prefix+"CVM", CVMvalues, desc="")
+
+            # computation
+            EJCvalues=np.zeros((aqui.GetPointFrameNumber(),3))
+
+            csFrame=frame.Frame()
+            for i in range(0,aqui.GetPointFrameNumber()):
+
+                pt1=aqui.GetPoint(str(dictRef[side+" UpperArm"]["TF"]['labels'][0])).GetValues()[i,:]
+                pt2=aqui.GetPoint(str(dictRef[side+" UpperArm"]["TF"]['labels'][1])).GetValues()[i,:]
+                pt3=aqui.GetPoint(str(dictRef[side+" UpperArm"]["TF"]['labels'][2])).GetValues()[i,:]
+                ptOrigin=aqui.GetPoint(str(dictRef[side+" UpperArm"]["TF"]['labels'][3])).GetValues()[i,:]
+
+
+                a1=(pt2-pt1)
+                a1=np.divide(a1,np.linalg.norm(a1))
+
+                v=(pt3-pt1)
+                v=np.divide(v,np.linalg.norm(v))
+
+                a2=np.cross(a1,v)
+                a2=np.divide(a2,np.linalg.norm(a2))
+
+                x,y,z,R=frame.setFrameData(a1,a2,dictRef[side+" UpperArm"]["TF"]['sequence'])
+
+                csFrame.m_axisX=x
+                csFrame.m_axisY=y
+                csFrame.m_axisZ=z
+                csFrame.setRotation(R)
+                csFrame.setTranslation(ptOrigin)
+
+                seg.getReferential("TF").addMotionFrame(copy.deepcopy(csFrame))
+
+                SJC = aqui.GetPoint(prefix+"SJC").GetValues()[i,:]
+                LHE=aqui.GetPoint(prefix+"ELB").GetValues()[i,:]
+                CVM = aqui.GetPoint(prefix+"CVM").GetValues()[i,:]
+
+                #EJCvalues[i,:] =  modelDecorator.chord( (self.mp[side+"ElbowWidth"]+ markerDiameter)/2.0 ,LHE,SJC,CVM, beta=0 )
+                EJCvalues[i,:] =  modelDecorator.chord( (self.mp[side+"ElbowWidth"]+ markerDiameter)/2.0 ,pt1,pt2,pt3, beta=0 )
+
+
+            #btkTools.smartAppendPoint(aqui,"LKJC_Chord",LKJCvalues,desc="chord")
+
+            # --- LKJC
+            if  "useLeftEJCmarker" in options.keys():
+                LEJCvalues = aqui.GetPoint(options["useLeftEJCmarker"]).GetValues()
+                desc = aqui.GetPoint(options["useLeftEJCmarker"]).GetDescription()
+                btkTools.smartAppendPoint(aqui,"LEJC",LEJCvalues,desc=desc)
+            if  "useRightEJCmarker" in options.keys():
+                REJCvalues = aqui.GetPoint(options["useRightEJCmarker"]).GetValues()
+                desc = aqui.GetPoint(options["useRightEJCmarker"]).GetDescription()
+                btkTools.smartAppendPoint(aqui,"REJC",LEJCvalues,desc=desc)
+
+
+            if not btkTools.isPointExist(aqui,prefix+"EJC"):
+                desc = seg.getReferential('TF').static.getNode_byLabel(prefix+"EJC").m_desc
+                #LKJCvalues = aqui.GetPoint("LKJC_Chord").GetValues()
+                btkTools.smartAppendPoint(aqui,prefix+"EJC",EJCvalues,desc=str("Chord-"+desc))
+
+        if frameReconstruction == "Both" or frameReconstruction == "Anatomical":
+            # --- motion of the anatomical referential
+            seg.anatomicalFrame.motion=[]
+
+            # additional markers
+            # NA
+            # computation
+            csFrame=frame.Frame()
+            for i in range(0,aqui.GetPointFrameNumber()):
+
+                pt1=aqui.GetPoint(str(dictAnat[side+" UpperArm"]['labels'][0])).GetValues()[i,:]
+                pt2=aqui.GetPoint(str(dictAnat[side+" UpperArm"]['labels'][1])).GetValues()[i,:]
+                pt3=aqui.GetPoint(str(dictAnat[side+" UpperArm"]['labels'][2])).GetValues()[i,:]
+                ptOrigin=aqui.GetPoint(str(dictAnat[side+" UpperArm"]['labels'][3])).GetValues()[i,:]
+
+
+                a1=(pt2-pt1)
+                a1=np.divide(a1,np.linalg.norm(a1))
+
+                v=(pt3-pt1)
+                v=np.divide(v,np.linalg.norm(v))
+
+                a2=np.cross(a1,v)
+                a2=np.divide(a2,np.linalg.norm(a2))
+
+                x,y,z,R=frame.setFrameData(a1,a2,dictAnat[side+" UpperArm"]['sequence'])
+
+
+                csFrame.m_axisX=x
+                csFrame.m_axisY=y
+                csFrame.m_axisZ=z
+                csFrame.setRotation(R)
+                csFrame.setTranslation(ptOrigin)
+
+                seg.anatomicalFrame.addMotionFrame(copy.deepcopy(csFrame))
+
+    def _foreArm_motion(self,side,aqui, dictRef,dictAnat,options=None, frameReconstruction="both"):
+        """
+            Compute Motion of both Technical and Anatomical coordinate systems of the left thigh
+
+            :Parameters:
+               - `aqui` (btkAcquisition) - acquisition instance of a dynamic trial
+               - `dictRef` (dict) - dictionnary reporting markers and sequence use for building Technical coordinate system
+               - `dictAnat` (dict) - dictionnary reporting markers and sequence use for building Anatomical coordinate system
+               - `options` (dict) - dictionnary use to pass options
+
+        """
+        if side == "Left":
+            prefix = "L"
+            s = -1.0
+
+        if "markerDiameter" in options.keys():
+            logging.debug(" option (markerDiameter) found ")
+            markerDiameter = options["markerDiameter"]
+        else:
+            markerDiameter=14.0
+
+        if "basePlate" in options.keys():
+            logging.debug(" option (basePlate) found ")
+            basePlate = options["basePlate"]
+        else:
+            basePlate=2.0
+
+        seg=self.getSegment(side+" ForeArm")
+
+        if frameReconstruction == "Both" or frameReconstruction == "Technical":
+        # --- motion of the technical referential
+            seg.getReferential("TF").motion =[]   # reinit Technical Frame Motion ()
+
+            # additional markers
+
+            # computation
+            WJCvalues=np.zeros((aqui.GetPointFrameNumber(),3))
+
+            csFrame=frame.Frame()
+            for i in range(0,aqui.GetPointFrameNumber()):
+
+                pt1=aqui.GetPoint(str(dictRef[side+" ForeArm"]["TF"]['labels'][0])).GetValues()[i,:]#
+                pt2=aqui.GetPoint(str(dictRef[side+" ForeArm"]["TF"]['labels'][1])).GetValues()[i,:]
+                pt3=aqui.GetPoint(str(dictRef[side+" ForeArm"]["TF"]['labels'][2])).GetValues()[i,:]
+                ptOrigin=aqui.GetPoint(str(dictRef[side+" ForeArm"]["TF"]['labels'][3])).GetValues()[i,:]
+
+
+                a1=(pt2-pt1)
+                a1=np.divide(a1,np.linalg.norm(a1))
+
+                v=(pt3-pt1)
+                v=np.divide(v,np.linalg.norm(v))
+
+                a2=np.cross(a1,v)
+                a2=np.divide(a2,np.linalg.norm(a2))
+
+                x,y,z,R=frame.setFrameData(a1,a2,dictRef[side+" ForeArm"]["TF"]['sequence'])
+
+                csFrame.m_axisX=x
+                csFrame.m_axisY=y
+                csFrame.m_axisZ=z
+                csFrame.setRotation(R)
+                csFrame.setTranslation(ptOrigin)
+
+                seg.getReferential("TF").addMotionFrame(copy.deepcopy(csFrame))
+
+                EJC = pt2
+                US=pt3
+                RS=pt1
+
+                MWP=aqui.GetPoint(prefix+"MWP").GetValues()[i,:]
+
+                WJCaxis = np.cross((US-RS),(EJC-MWP))
+                WJCaxis = WJCaxis / np.linalg.norm(WJCaxis)
+                WJCvalues[i,:] =MWP +  (s*(self.mp[side +"WristWidth"]+markerDiameter)/2.0)*WJCaxis
+
+
+                EJC=aqui.GetPoint(prefix+"EJC").GetValues()[i,:]
+                US=aqui.GetPoint(prefix+"WRB").GetValues()[i,:]
+                RS=aqui.GetPoint(prefix+"WRA").GetValues()[i,:]
+                MWP=aqui.GetPoint(prefix+"MWP").GetValues()[i,:]
+
+
+            #btkTools.smartAppendPoint(aqui,"LKJC_Chord",LKJCvalues,desc="chord")
+
+            if  "useLeftWJCmarker" in options.keys():
+                LWJCvalues = aqui.GetPoint(options["useLeftWJCmarker"]).GetValues()
+                desc = aqui.GetPoint(options["useLeftWJCmarker"]).GetDescription()
+                btkTools.smartAppendPoint(aqui,"LWJC",LWJCvalues,desc=desc)
+
+            if  "useRightWJCmarker" in options.keys():
+                RWJCvalues = aqui.GetPoint(options["useRightWJCmarker"]).GetValues()
+                desc = aqui.GetPoint(options["useRightWJCmarker"]).GetDescription()
+                btkTools.smartAppendPoint(aqui,"RWJC",RWJCvalues,desc=desc)
+
+            if not btkTools.isPointExist(aqui,"WJC"):
+                desc = seg.getReferential('TF').static.getNode_byLabel(prefix+"WJC").m_desc
+                #LKJCvalues = aqui.GetPoint("LKJC_Chord").GetValues()
+                btkTools.smartAppendPoint(aqui,prefix+"WJC",WJCvalues,desc=str("Chord-"+desc))
+
+
+        if frameReconstruction == "Both" or frameReconstruction == "Anatomical":
+            # --- motion of the anatomical referential
+            seg.anatomicalFrame.motion=[]
+
+            # computation
+            csFrame=frame.Frame()
+            for i in range(0,aqui.GetPointFrameNumber()):
+
+                pt1=aqui.GetPoint(str(dictAnat[side+" ForeArm"]['labels'][0])).GetValues()[i,:]
+                pt2=aqui.GetPoint(str(dictAnat[side+" ForeArm"]['labels'][1])).GetValues()[i,:]
+                if dictAnat[side+" ForeArm"]['labels'][2] is not None:
+                    pt3=aqui.GetPoint(str(dictAnat[side+" ForeArm"]['labels'][2])).GetValues()[i,:]
+
+                ptOrigin=aqui.GetPoint(str(dictAnat[side+" ForeArm"]['labels'][3])).GetValues()[i,:]
+
+
+                a1=(pt2-pt1)
+                a1=np.divide(a1,np.linalg.norm(a1))
+
+                if dictAnat[side+" ForeArm"]['labels'][2] is not None:
+                    v=(pt3-pt1)
+                    v=np.divide(v,np.linalg.norm(v))
+                else:
+                    v=self.getSegment(side+" UpperArm").anatomicalFrame.motion[i].m_axisY
+
+                a2=np.cross(a1,v)
+                a2=np.divide(a2,np.linalg.norm(a2))
+
+                x,y,z,R=frame.setFrameData(a1,a2,dictAnat[side+" ForeArm"]['sequence'])
+
+                csFrame.m_axisX=x
+                csFrame.m_axisY=y
+                csFrame.m_axisZ=z
+                csFrame.setRotation(R)
+                csFrame.setTranslation(ptOrigin)
+
+                seg.anatomicalFrame.addMotionFrame(copy.deepcopy(csFrame))
+
+    def _hand_motion(self,side,aqui, dictRef,dictAnat,options=None):
+        """
+            Compute Motion of both Technical and Anatomical coordinate systems of the left thigh
+
+            :Parameters:
+               - `aqui` (btkAcquisition) - acquisition instance of a dynamic trial
+               - `dictRef` (dict) - dictionnary reporting markers and sequence use for building Technical coordinate system
+               - `dictAnat` (dict) - dictionnary reporting markers and sequence use for building Anatomical coordinate system
+               - `options` (dict) - dictionnary use to pass options
+
+        """
+        if side == "Left":
+            prefix = "L"
+
+        if "markerDiameter" in options.keys():
+            logging.debug(" option (markerDiameter) found ")
+            markerDiameter = options["markerDiameter"]
+        else:
+            markerDiameter=14.0
+
+        if "basePlate" in options.keys():
+            logging.debug(" option (basePlate) found ")
+            basePlate = options["basePlate"]
+        else:
+            basePlate=2.0
+
+        seg=self.getSegment(side+" Hand")
+
+
+        # --- motion of the technical referential
+        seg.getReferential("TF").motion =[]   # reinit Technical Frame Motion ()
+
+        # additional markers
+        midwrist=(aqui.GetPoint(prefix+"WRA").GetValues() + aqui.GetPoint(prefix+"WRB").GetValues()) / 2.0
+        btkTools.smartAppendPoint(aqui,prefix+"MWP",midwrist,desc="")
+
+
+        # computation
+        HOvalues=np.zeros((aqui.GetPointFrameNumber(),3))
+
+        csFrame=frame.Frame()
+        for i in range(0,aqui.GetPointFrameNumber()):
+
+            pt1=aqui.GetPoint(str(dictRef[side+" Hand"]["TF"]['labels'][0])).GetValues()[i,:]
+            pt2=aqui.GetPoint(str(dictRef[side+" Hand"]["TF"]['labels'][1])).GetValues()[i,:]
+            pt3=aqui.GetPoint(str(dictRef[side+" Hand"]["TF"]['labels'][2])).GetValues()[i,:]
+            ptOrigin=aqui.GetPoint(str(dictRef[side+" Hand"]["TF"]['labels'][3])).GetValues()[i,:]
+
+            a1=(pt2-pt1)
+            a1=np.divide(a1,np.linalg.norm(a1))
+
+            v=(pt3-pt1)
+            v=np.divide(v,np.linalg.norm(v))
+
+            a2=np.cross(a1,v)
+            a2=np.divide(a2,np.linalg.norm(a2))
+
+            x,y,z,R=frame.setFrameData(a1,a2,dictRef[side+" Hand"]["TF"]['sequence'])
+
+            csFrame.m_axisX=x
+            csFrame.m_axisY=y
+            csFrame.m_axisZ=z
+            csFrame.setRotation(R)
+            csFrame.setTranslation(ptOrigin)
+
+            seg.getReferential("TF").addMotionFrame(copy.deepcopy(csFrame))
+
+            WJC=aqui.GetPoint(prefix+"WJC").GetValues()[i,:]
+            MH2=aqui.GetPoint(prefix+"FIN").GetValues()[i,:]
+            MWP=aqui.GetPoint(prefix+"MWP").GetValues()[i,:]
+            HOvalues[i,:] =  modelDecorator.chord( (self.mp[side+"HandThickness"]+ markerDiameter)/2.0 ,MH2, WJC, MWP, beta=0 )
+
+
+        if  "useLeftHOmarker" in options.keys():
+            LHOvalues = aqui.GetPoint(options["useLeftHOmarker"]).GetValues()
+            desc = aqui.GetPoint(options["useLeftHOmarker"]).GetDescription()
+            btkTools.smartAppendPoint(aqui,"LHO",LHOvalues,desc=desc)
+
+        if  "useRightHOmarker" in options.keys():
+            RHOvalues = aqui.GetPoint(options["useRightHOmarker"]).GetValues()
+            desc = aqui.GetPoint(options["useRightHOmarker"]).GetDescription()
+            btkTools.smartAppendPoint(aqui,"RHO",RHOvalues,desc=desc)
+
+
+        if not btkTools.isPointExist(aqui,prefix+"HO"):
+            desc = seg.getReferential('TF').static.getNode_byLabel(prefix+"HO").m_desc
+            #LKJCvalues = aqui.GetPoint("LKJC_Chord").GetValues()
+            btkTools.smartAppendPoint(aqui,prefix+"HO",HOvalues,desc=str("Chord-"+desc))
+
+
+
+        # --- motion of the anatomical referential
+        seg.anatomicalFrame.motion=[]
+
+        # additional markers
+        # NA
+        # computation
+        csFrame=frame.Frame()
+        for i in range(0,aqui.GetPointFrameNumber()):
+
+            pt1=aqui.GetPoint(str(dictAnat[side+" Hand"]['labels'][0])).GetValues()[i,:]
+            pt2=aqui.GetPoint(str(dictAnat[side+" Hand"]['labels'][1])).GetValues()[i,:]
+            pt3=aqui.GetPoint(str(dictAnat[side+" Hand"]['labels'][2])).GetValues()[i,:]
+            ptOrigin=aqui.GetPoint(str(dictAnat[side+" Hand"]['labels'][3])).GetValues()[i,:]
+
+
+            a1=(pt2-pt1)
+            a1=np.divide(a1,np.linalg.norm(a1))
+
+            v=(pt3-pt1)
+            v=np.divide(v,np.linalg.norm(v))
+
+            a2=np.cross(a1,v)
+            a2=np.divide(a2,np.linalg.norm(a2))
+
+            x,y,z,R=frame.setFrameData(a1,a2,dictAnat[side+" Hand"]['sequence'])
+
+            csFrame.m_axisX=x
+            csFrame.m_axisY=y
+            csFrame.m_axisZ=z
+            csFrame.setRotation(R)
+            csFrame.setTranslation(ptOrigin)
+
+            seg.anatomicalFrame.addMotionFrame(copy.deepcopy(csFrame))
+
+    def _head_motion(self,aqui, dictRef,dictAnat,options=None):
+        """
+            Compute Motion of both Technical and Anatomical coordinate systems of the left foot
+
+            :Parameters:
+               - `aqui` (btkAcquisition) - acquisition instance of a dynamic trial
+               - `dictRef` (dict) - dictionnary reporting markers and sequence use for building Technical coordinate system
+               - `dictAnat` (dict) - dictionnary reporting markers and sequence use for building Anatomical coordinate system
+               - `options` (dict) - dictionnary use to pass options
+
+        """
+        seg=self.getSegment("Head")
+
+        # --- motion of the technical referential
+        seg.getReferential("TF").motion =[]
+
+        # additional markers
+        valmFH=(aqui.GetPoint("LFHD").GetValues() + aqui.GetPoint("RFHD").GetValues()) / 2.0
+        btkTools.smartAppendPoint(aqui,"midFH",valmFH,desc="")
+
+        valmBH=(aqui.GetPoint("LBHD").GetValues() + aqui.GetPoint("RBHD").GetValues()) / 2.0
+        btkTools.smartAppendPoint(aqui,"midBH",valmBH,desc="")
+
+        valmHC=(valmFH+valmBH) / 2.0
+        btkTools.smartAppendPoint(aqui,"HC",valmHC,desc="")
+
+        # computation
+        csFrame=frame.Frame()
+        for i in range(0,aqui.GetPointFrameNumber()):
+
+            pt1=aqui.GetPoint(str(dictRef["Head"]["TF"]['labels'][0])).GetValues()[i,:] #toe
+            pt2=aqui.GetPoint(str(dictRef["Head"]["TF"]['labels'][1])).GetValues()[i,:] #ajc
+            pt3=aqui.GetPoint(str(dictRef["Head"]["TF"]['labels'][2])).GetValues()[i,:] #ajc
+            ptOrigin=aqui.GetPoint(str(dictRef["Head"]["TF"]['labels'][3])).GetValues()[i,:]
+
+            a1=(pt2-pt1)
+            a1=np.divide(a1,np.linalg.norm(a1))
+
+            v=(pt3-pt1)
+            v=np.divide(v,np.linalg.norm(v))
+
+            a2=np.cross(a1,v)
+            a2=np.divide(a2,np.linalg.norm(a2))
+
+            x,y,z,R=frame.setFrameData(a1,a2,dictRef["Head"]["TF"]['sequence'])
+
+            csFrame.m_axisX=x
+            csFrame.m_axisY=y
+            csFrame.m_axisZ=z
+            csFrame.setRotation(R)
+            csFrame.setTranslation(ptOrigin)
+
+            seg.getReferential("TF").addMotionFrame(copy.deepcopy(csFrame))
+
+
+        # --- motion of the anatomical referential
+        seg.anatomicalFrame.motion=[]
+
+        # additional markers
+        # NA
+
+        # computation
+        for i in range(0,aqui.GetPointFrameNumber()):
+            csFrame=frame.Frame()
+            for i in range(0,aqui.GetPointFrameNumber()):
+                ptOrigin=aqui.GetPoint(str(dictAnat["Head"]['labels'][3])).GetValues()[i,:]
+                R = np.dot(seg.getReferential("TF").motion[i].getRotation(), seg.getReferential("TF").relativeMatrixAnatomic)
+
+                csFrame.update(R,ptOrigin)
+                seg.anatomicalFrame.addMotionFrame(copy.deepcopy(csFrame))

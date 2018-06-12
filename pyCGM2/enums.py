@@ -71,6 +71,13 @@ class EmgAmplitudeNormalization(Enum):
     MedianMax = "MedianMax"
     Threshold = "Threshold"
 
+class bodyPart(Enum):
+    """  """
+    Lowerlimb = 0
+    LowerLimb_Trunk = 1
+    FullBody = 2
+    UpperLimb = 3
+
 
 
 # --- enum used with Btk-Models

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MokkaModelVisualConfiguration name="testUpperLimb" version="1.0">
+    <MarkersList>
+        <Marker label="LFHD" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RFHD" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LBHD" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RBHD" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="C7" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="T10" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="CLAV" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="STRN" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RBAK" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LSHO" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LUPA" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LELB" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LFRM" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LWRA" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LWRB" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LFIN" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RSHO" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RUPA" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RELB" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RFRM" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RWRA" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RWRB" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RFIN" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LASI" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RASI" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LPSI" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RPSI" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LTHI" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LKNE" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LTIB" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LANK" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LHEE" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LTOE" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RTHI" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RKNE" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RTIB" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RANK" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RHEE" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RTOE" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="*115" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="midTop" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="midBottom" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="midFront" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LMWP" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RMWP" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="midFH" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="midBH" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="HC" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="OT" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LVWM" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RVWM" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LSJC" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="RSJC" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LCVM" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LEJC" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LWJC" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LHO" radius="8" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="THORAX_X" radius="2" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="THORAX_Y" radius="2" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="THORAX_Z" radius="2" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LCLAVICLE_X" radius="1" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LCLAVICLE_Y" radius="1" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LCLAVICLE_Z" radius="1" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="HEAD_X" radius="1" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="HEAD_Y" radius="1" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="HEAD_Z" radius="1" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LUPPERARM_X" radius="2" colorR="0" colorG="0" colorB="0" visible="1" trajectory="0"/>
+        <Marker label="LUPPERARM_Y" radius="2" colorR="0" colorG="0" colorB="0" visible="1" trajectory="0"/>
+        <Marker label="LUPPERARM_Z" radius="2" colorR="0" colorG="0" colorB="0" visible="1" trajectory="0"/>
+        <Marker label="LFOREARM_X" radius="1" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LFOREARM_Y" radius="1" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LFOREARM_Z" radius="1" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LHANDARM_X" radius="1" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LHANDARM_Y" radius="1" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="LHANDARM_Z" radius="1" colorR="1" colorG="1" colorB="1" visible="1" trajectory="0"/>
+        <Marker label="PELO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="PELA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="PELL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="PELP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LFEO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LFEA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LFEL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LFEP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LTIO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LTIA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LTIL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LTIP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LFOO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LFOA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LFOL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LFOP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LTOO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LTOA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LTOL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LTOP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RFEO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RFEA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RFEL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RFEP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RTIO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RTIA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RTIL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RTIP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RFOO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RFOA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RFOL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RFOP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RTOO" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="RTOA" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="RTOL" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="RTOP" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="HEDO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="HEDA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="HEDL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="HEDP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LCLO" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="LCLA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LCLL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LCLP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RCLO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RCLA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RCLL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RCLP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="TRXO" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="TRXA" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="TRXL" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="TRXP" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="LHUO" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="LHUA" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="LHUL" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="LHUP" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="LRAO" radius="8" colorR="0.329412" colorG="1" colorB="0" visible="0" trajectory="0"/>
+        <Marker label="LRAA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LRAL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LRAP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LHNO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LHNA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LHNL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="LHNP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RHUO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RHUA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RHUL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RHUP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RRAO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RRAA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RRAL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RRAP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RHNO" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RHNA" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RHNL" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+        <Marker label="RHNP" radius="8" colorR="1" colorG="1" colorB="1" visible="0" trajectory="0"/>
+    </MarkersList>
+    <SegmentsList>
+        <Segment label="AF humerus" colorR="0" colorG="0" colorB="0" visible="1" surface="0" description="">
+            <Point label="LEJC"/>
+            <Point label="LUPPERARM_X"/>
+            <Point label="LUPPERARM_Y"/>
+            <Point label="LUPPERARM_Z"/>
+            <Link pt1="LEJC" pt2="LUPPERARM_X"/>
+            <Link pt1="LEJC" pt2="LUPPERARM_Y"/>
+            <Link pt1="LEJC" pt2="LUPPERARM_Z"/>
+        </Segment>
+        <Segment label="AF thorax" colorR="0" colorG="0" colorB="0" visible="1" surface="0" description="">
+            <Point label="CLAV"/>
+            <Point label="THORAX_X"/>
+            <Point label="THORAX_Y"/>
+            <Point label="THORAX_Z"/>
+            <Link pt1="CLAV" pt2="THORAX_X"/>
+            <Link pt1="CLAV" pt2="THORAX_Z"/>
+            <Link pt1="CLAV" pt2="THORAX_Y"/>
+        </Segment>
+        <Segment label="AF foreArm" colorR="0" colorG="0" colorB="0" visible="1" surface="0" description="">
+            <Point label="LWJC"/>
+            <Point label="LFOREARM_X"/>
+            <Point label="LFOREARM_Y"/>
+            <Point label="LFOREARM_Z"/>
+            <Link pt1="LFOREARM_X" pt2="LWJC"/>
+            <Link pt1="LFOREARM_Y" pt2="LWJC"/>
+            <Link pt1="LFOREARM_Z" pt2="LWJC"/>
+        </Segment>
+        <Segment label="AF Hand" colorR="0" colorG="0" colorB="0" visible="1" surface="0" description="">
+            <Point label="LHO"/>
+            <Point label="LHANDARM_X"/>
+            <Point label="LHANDARM_Y"/>
+            <Point label="LHANDARM_Z"/>
+            <Link pt1="LHANDARM_X" pt2="LHO"/>
+            <Link pt1="LHANDARM_Y" pt2="LHO"/>
+            <Link pt1="LHANDARM_Z" pt2="LHO"/>
+        </Segment>
+        <Segment label="humerus" colorR="1" colorG="1" colorB="1" visible="1" surface="0" description="">
+            <Point label="LUPA"/>
+            <Point label="LELB"/>
+            <Point label="LSJC"/>
+            <Link pt1="LELB" pt2="LSJC"/>
+            <Link pt1="LELB" pt2="LUPA"/>
+            <Link pt1="LSJC" pt2="LUPA"/>
+        </Segment>
+        <Segment label="arm" colorR="1" colorG="0" colorB="0" visible="1" surface="0" description="">
+            <Point label="LELB"/>
+            <Point label="LMWP"/>
+            <Point label="LSJC"/>
+            <Link pt1="LELB" pt2="LSJC"/>
+            <Link pt1="LELB" pt2="LMWP"/>
+        </Segment>
+        <Segment label="head AF" colorR="0" colorG="0" colorB="0" visible="1" surface="0" description="">
+            <Point label="HC"/>
+            <Point label="HEAD_X"/>
+            <Point label="HEAD_Y"/>
+            <Point label="HEAD_Z"/>
+            <Link pt1="HC" pt2="HEAD_X"/>
+            <Link pt1="HC" pt2="HEAD_Y"/>
+            <Link pt1="HC" pt2="HEAD_Z"/>
+        </Segment>
+        <Segment label="Left Claicle AF" colorR="0" colorG="0" colorB="0" visible="1" surface="0" description="">
+            <Point label="LSJC"/>
+            <Point label="LCLAVICLE_X"/>
+            <Point label="LCLAVICLE_Y"/>
+            <Point label="LCLAVICLE_Z"/>
+            <Link pt1="LCLAVICLE_X" pt2="LSJC"/>
+            <Link pt1="LCLAVICLE_Y" pt2="LSJC"/>
+            <Link pt1="LCLAVICLE_Z" pt2="LSJC"/>
+        </Segment>
+        <Segment label="th" colorR="1" colorG="1" colorB="1" visible="1" surface="0" description="">
+            <Point label="TRXO"/>
+            <Point label="TRXP"/>
+            <Link pt1="TRXO" pt2="TRXP"/>
+        </Segment>
+        <Segment label="vicon Hum F" colorR="0.333333" colorG="1" colorB="0" visible="1" surface="0" description="">
+            <Point label="LHUO"/>
+            <Point label="LHUA"/>
+            <Point label="LHUL"/>
+            <Point label="LHUP"/>
+            <Link pt1="LHUA" pt2="LHUO"/>
+            <Link pt1="LHUL" pt2="LHUO"/>
+            <Link pt1="LHUO" pt2="LHUP"/>
+        </Segment>
+    </SegmentsList>
+</MokkaModelVisualConfiguration>
