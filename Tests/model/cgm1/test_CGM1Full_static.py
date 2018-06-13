@@ -28,40 +28,9 @@ import pyCGM2.enums as pyCGM2Enums
 
 class CGM1_calibrationTest():
 
-    @classmethod
-    def basicCGM1_verif(cls):
-
-        MAIN_PATH = pyCGM2.CONFIG.TEST_DATA_PATH + "CGM1\\CGM1-TESTS\\basic\\"
-        staticFilename = "MRI-US-01, 2008-08-08, 3DGA 02.c3d"
-
-        acqStatic = btkTools.smartReader(str(MAIN_PATH +  staticFilename))
-
-        model=cgm.CGM1LowerLimbs()
-        model.configure()
-
-
-        markerDiameter=14
-        mp={
-        'Bodymass'   : 71.0,
-        'LeftLegLength' : 860.0,
-        'RightLegLength' : 865.0 ,
-        'LeftKneeWidth' : 102.0,
-        'RightKneeWidth' : 103.4,
-        'LeftAnkleWidth' : 75.3,
-        'RightAnkleWidth' : 72.9,
-        'LeftSoleDelta' : 0,
-        'RightSoleDelta' : 0,
-        }
-        model.addAnthropoInputParameters(mp)
-
-         # -----------CGM STATIC CALIBRATION--------------------
-        scp=modelFilters.StaticCalibrationProcedure(model)
-
-        modelFilters.ModelCalibrationFilter(scp,acqStatic,model).compute()
-
 
     @classmethod
-    def basicCGM1(cls):
+    def CGM1_fullUpperLimb(cls):
 
         MAIN_PATH = pyCGM2.CONFIG.TEST_DATA_PATH + "CGM1\\CGM1-TESTS\\full-PiG\\"
         staticFilename = "PN01NORMSTAT.c3d"
@@ -94,7 +63,7 @@ class CGM1_calibrationTest():
         csdf.setStatic(True)
         csdf.display()
 
-        btkTools.smartWriter(acqStatic,"testUpperLimb.c3d")
+        btkTools.smartWriter(acqStatic,"upperLimb_calib.c3d")
 
 
         # joint centres
@@ -109,7 +78,7 @@ if __name__ == "__main__":
 
 
 
-    CGM1_calibrationTest.basicCGM1()
+    CGM1_calibrationTest.CGM1_fullUpperLimb()
 
 
 

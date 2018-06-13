@@ -13,6 +13,55 @@ from pyCGM2.Math import euler,geometry
 from pyCGM2.Tools import  btkTools
 from pyCGM2.Nexus import nexusTools
 
+def computeRelativeThoraxAngle(acq,upperLimbModel,lowerLimbModel,pointLabelSuffix=""):
+
+    thorax = upperLimbModel.getSegment("Thorax")
+    pelvis = lowerLimbModel.getSegment("Pelvis")
+
+    nframes = acq.GetPointFrameNumber()
+
+    anglesValues = np.zeros((nframes,3))
+
+
+
+    for i in range(0,nframes):
+        Rdist =thorax.anatomicalFrame.motion[i].getRotation()
+        Rprox =pelvis.anatomicalFrame.motion[i].getRotation()
+
+        #Rrelative= np.dot(Rprox.T, Rdist)
+        Rrelative= np.dot(Rdist.T, Rprox)
+
+
+        Euler1,Euler2,Euler3 = euler.euler_yxz(Rrelative) #euler_yxz
+
+        anglesValues[i,0] = Euler1 - np.deg2rad(180.0)
+        anglesValues[i,1] = -1.0*Euler2
+        anglesValues[i,2] = Euler3
+
+    # correction of the eventual rotation
+    i=0
+    for value in anglesValues[:,2]:
+        if value <0:
+            anglesValues[i,2] = -1*value - np.deg2rad(180.0)
+        elif value >0:
+            anglesValues[i,2] = -1*value + np.deg2rad(180.0)
+        i+=1
+
+    #import ipdb; ipdb.set_trace()
+    finalValues_L = np.rad2deg(anglesValues)
+    finalValues_R = np.array([1,-1,-1]) * finalValues_L
+
+    fulljointLabel  = "SpineAngles_" + pointLabelSuffix if pointLabelSuffix!="" else "SpineAngles"
+    btkTools.smartAppendPoint(acq,
+                 "L"+fulljointLabel,
+                 finalValues_L,PointType=btk.btkPoint.Angle, desc="")
+
+    btkTools.smartAppendPoint(acq,
+                 "R"+fulljointLabel,
+                 finalValues_R,PointType=btk.btkPoint.Angle, desc="")
+
+
+
 
 class CGM(model.Model):
     """
@@ -4360,20 +4409,37 @@ class CGM1UpperLimbs(CGM):
         self.addSegment("Head",0,enums.SegmentSide.Central,calibration_markers=[], tracking_markers = ["LFHD","RFHD","LBHD","RBHD"])
         self.addSegment("Thorax",0,enums.SegmentSide.Central,calibration_markers=[], tracking_markers = ["CLAV","C7","T10","STRN"])
         self.addSegment("Left Clavicle",0,enums.SegmentSide.Left,calibration_markers=[], tracking_markers = [])
-        self.addSegment("Left UpperArm",0,enums.SegmentSide.Left,calibration_markers=[], tracking_markers = ["LSJC","LUPA","LELB"])
+        self.addSegment("Left UpperArm",0,enums.SegmentSide.Left,calibration_markers=[], tracking_markers = ["LSJC","LELB"])
         self.addSegment("Left ForeArm",0,enums.SegmentSide.Left,calibration_markers=[], tracking_markers = ["LWRA","LWRB","LFRM","LEJC"])
         self.addSegment("Left Hand",0,enums.SegmentSide.Left,calibration_markers=[], tracking_markers = ["LWRA","LWRB","LFIN","LWJC"])
+
+        self.addSegment("Right Clavicle",0,enums.SegmentSide.Right,calibration_markers=[], tracking_markers = [])
+        self.addSegment("Right UpperArm",0,enums.SegmentSide.Right,calibration_markers=[], tracking_markers = ["RSJC","RELB"])
+        self.addSegment("Right ForeArm",0,enums.SegmentSide.Right,calibration_markers=[], tracking_markers = ["RWRA","RWRB","RFRM","REJC"])
+        self.addSegment("Right Hand",0,enums.SegmentSide.Right,calibration_markers=[], tracking_markers = ["RWRA","RWRB","RFIN","RWJC"])
+
 
         self.addJoint("LShoulder","Thorax", "Left UpperArm","XYZ","LSJC")
         self.addJoint("LElbow","Left UpperArm", "Left ForeArm","YXZ","LEJC")
         self.addJoint("LWrist","Left ForeArm", "Left Hand","YXZ","LWJC")
         self.addJoint("LNeck","Thorax", "Head","YXZ","OT")
 
+        self.addJoint("RShoulder","Thorax", "Right UpperArm","XYZ","RSJC")
+        self.addJoint("RElbow","Right UpperArm", "Right ForeArm","YXZ","REJC")
+        self.addJoint("RWrist","Right ForeArm", "Right Hand","YXZ","RWJC")
+        self.addJoint("RNeck","Thorax", "Head","YXZ","OT")
+
+
         # clinics
         self.setClinicalDescriptor("LShoulder",enums.DataType.Angle, [1,0,2],[-1.0,1.0,-1.0], [0.0,np.radians(180),np.radians(-180)])
         self.setClinicalDescriptor("LElbow",enums.DataType.Angle, [0,2,1],[1.0,1.0,1.0], [0.0,0.0,0.0])
         self.setClinicalDescriptor("LWrist",enums.DataType.Angle, [0,1,2],[1.0,-1.0,-1.0], [0.0,0,0.0])
         self.setClinicalDescriptor("LNeck",enums.DataType.Angle, [0,2,1],[-1.0,1.0,1.0], [-np.radians(180),np.radians(180),0.0])
+
+        self.setClinicalDescriptor("RShoulder",enums.DataType.Angle, [1,0,2],[-1.0,-1.0,-1.0], [0.0,-np.radians(180),np.radians(-180)])
+        self.setClinicalDescriptor("RElbow",enums.DataType.Angle, [0,2,1],[1.0,1.0,1.0], [0.0,0.0,0.0])
+        self.setClinicalDescriptor("RWrist",enums.DataType.Angle, [0,1,2],[1.0,1.0,1.0], [0.0,0,0.0])
+        self.setClinicalDescriptor("RNeck",enums.DataType.Angle, [0,2,1],[-1.0,1.0,1.0], [-np.radians(180),np.radians(180),0.0])
 
         self.__coordinateSystemDefinitions()
 
@@ -4389,28 +4455,40 @@ class CGM1UpperLimbs(CGM):
         dictRef={}
         dictRef["Thorax"]={"TF" : {'sequence':"ZYX", 'labels':   ["midTop","midBottom","midFront","CLAV"]} }
         dictRef["Left Clavicle"]={"TF" : {'sequence':"ZXY", 'labels':   ["LSJC","OT","LVWM","LSJC"]} } # OT and LWM from thorax
+        dictRef["Right Clavicle"]={"TF" : {'sequence':"ZXY", 'labels':   ["RSJC","OT","RVWM","RSJC"]} } # OT and LWM from thorax
         dictRef["Head"]={"TF" : {'sequence':"XZY", 'labels':   ["midBH","midFH","LBHD","HC"]} }
         dictRef["Left UpperArm"]={"TF" : {'sequence':"ZYiX", 'labels':   ["LELB","LSJC","LCVM","LELB"]} }
         dictRef["Left ForeArm"]={"TF" : {'sequence':"ZXY", 'labels':   ["LWRA","LEJC","LWRB","LWRB"]} }
         dictRef["Left Hand"]={"TF" : {'sequence':"ZYX", 'labels':   ["LFIN","LWJC","LMWP","LFIN"]} }
+        dictRef["Right UpperArm"]={"TF" : {'sequence':"ZYiX", 'labels':   ["RELB","RSJC","RCVM","RELB"]} }
+        dictRef["Right ForeArm"]={"TF" : {'sequence':"ZXY", 'labels':   ["RWRA","REJC","RWRB","RWRB"]} }
+        dictRef["Right Hand"]={"TF" : {'sequence':"ZYX", 'labels':   ["RFIN","RWJC","RMWP","RFIN"]} }
 
         dictRefAnatomical={}
-        dictRefAnatomical["Thorax"]= {'sequence':"ZYX", 'labels':  ["midTop","midBottom","midFront","CLAV"]}
+        dictRefAnatomical["Thorax"]= {'sequence':"ZYX", 'labels':  ["midTop","midBottom","midFront","OT"]}
         dictRefAnatomical["Left Clavicle"]={'sequence':"ZXY", 'labels':   ["LSJC","OT","LVWM","LSJC"]} # idem technical
+        dictRefAnatomical["Right Clavicle"]={'sequence':"ZXY", 'labels':   ["RSJC","OT","RVWM","RSJC"]} # idem technical
         dictRefAnatomical["Head"]={'sequence':"XZY", 'labels':   ["midBH","midFH","LBHD","HC"]}
         dictRefAnatomical["Left UpperArm"]={'sequence':"ZYiX", 'labels':   ["LEJC","LSJC","LWJC","LEJC"]}
         dictRefAnatomical["Left ForeArm"]={'sequence':"ZXiY", 'labels':   ["LWJC","LEJC",None,"LWJC"]} # used y axis of upper
         dictRefAnatomical["Left Hand"]={'sequence':"ZYX", 'labels':   ["LHO","LWJC","LMWP","LHO"]}
+        dictRefAnatomical["Right UpperArm"]={'sequence':"ZYiX", 'labels':   ["REJC","RSJC","RWJC","REJC"]}
+        dictRefAnatomical["Right ForeArm"]={'sequence':"ZXiY", 'labels':   ["RWJC","REJC",None,"RWJC"]} # used y axis of upper
+        dictRefAnatomical["Right Hand"]={'sequence':"ZYX", 'labels':   ["RHO","RWJC","RMWP","RHO"]}
 
         return dictRef,dictRefAnatomical
 
     def __coordinateSystemDefinitions(self):
         self.setCoordinateSystemDefinition( "Thorax", "THORAX", "Anatomic")
         self.setCoordinateSystemDefinition( "Left Clavicle", "LCLAVICLE", "Anatomic")
+        self.setCoordinateSystemDefinition( "Right Clavicle", "RCLAVICLE", "Anatomic")
         self.setCoordinateSystemDefinition( "Head", "HEAD", "Anatomic")
         self.setCoordinateSystemDefinition( "Left UpperArm", "LUPPERARM", "Anatomic")
         self.setCoordinateSystemDefinition( "Left ForeArm", "LFOREARM", "Anatomic")
         self.setCoordinateSystemDefinition( "Left Hand", "LHANDARM", "Anatomic")
+        self.setCoordinateSystemDefinition( "Right UpperArm", "RUPPERARM", "Anatomic")
+        self.setCoordinateSystemDefinition( "Right ForeArm", "RFOREARM", "Anatomic")
+        self.setCoordinateSystemDefinition( "Right Hand", "RHANDARM", "Anatomic")
 
     def calibrate(self,aquiStatic, dictRef, dictAnatomic,  options=None):
         ff=aquiStatic.GetFirstFrame()
@@ -4439,11 +4517,11 @@ class CGM1UpperLimbs(CGM):
         self._torso_calibrate(aquiStatic,dictRef,frameInit,frameEnd,options=options)
         self._torso_Anatomicalcalibrate(aquiStatic, dictAnatomic,frameInit,frameEnd)
 
-        self._clavicle_calibrate("Left",aquiStatic,dictRef,frameInit,frameEnd,options=options)
-        self._clavicle_Anatomicalcalibrate("Left",aquiStatic, dictAnatomic,frameInit,frameEnd)
-
         self._head_calibrate(aquiStatic,dictRef,frameInit,frameEnd,options=options)
         self._head_AnatomicalCalibrate(aquiStatic, dictAnatomic,frameInit,frameEnd)
+
+        self._clavicle_calibrate("Left",aquiStatic,dictRef,frameInit,frameEnd,options=options)
+        self._clavicle_Anatomicalcalibrate("Left",aquiStatic, dictAnatomic,frameInit,frameEnd)
 
         self._constructArmVirtualMarkers("Left", aquiStatic)
 
@@ -4455,6 +4533,21 @@ class CGM1UpperLimbs(CGM):
 
         self._hand_calibrate("Left",aquiStatic, dictRef,frameInit,frameEnd, options=options)
         self._hand_Anatomicalcalibrate("Left",aquiStatic, dictAnatomic,frameInit,frameEnd)
+
+        self._clavicle_calibrate("Right",aquiStatic,dictRef,frameInit,frameEnd,options=options)
+        self._clavicle_Anatomicalcalibrate("Right",aquiStatic, dictAnatomic,frameInit,frameEnd)
+
+        self._constructArmVirtualMarkers("Right", aquiStatic)
+
+        self._upperArm_calibrate("Right",aquiStatic, dictRef,frameInit,frameEnd, options=options)
+        self._foreArm_calibrate("Right",aquiStatic, dictRef,frameInit,frameEnd, options=options)
+
+        self._upperArm_Anatomicalcalibrate("Right",aquiStatic, dictAnatomic,frameInit,frameEnd)
+        self._foreArm_Anatomicalcalibrate("Right",aquiStatic, dictAnatomic,frameInit,frameEnd)
+
+        self._hand_calibrate("Right",aquiStatic, dictRef,frameInit,frameEnd, options=options)
+        self._hand_Anatomicalcalibrate("Right",aquiStatic, dictAnatomic,frameInit,frameEnd)
+
 
 
     # ---- Technical Referential Calibration
@@ -4785,6 +4878,9 @@ class CGM1UpperLimbs(CGM):
 
         if side == "Left":
             prefix ="L"
+        if side == "Right":
+            prefix ="R"
+            s= 1.0
 
         segname = side + " " +"Clavicle"
         seg=self.getSegment(segname)
@@ -4829,6 +4925,9 @@ class CGM1UpperLimbs(CGM):
 
         if side == "Left":
             prefix ="L"
+        if side == "Right":
+            prefix ="R"
+            s= 1.0
 
 
         seg=self.getSegment(side+" Clavicle")
@@ -4873,6 +4972,9 @@ class CGM1UpperLimbs(CGM):
         if side == "Left":
             prefix ="L"
             s= -1.0
+        if side == "Right":
+            prefix ="R"
+            s= 1.0
 
         # mid wrist
         midwrist=(aqui.GetPoint(prefix+"WRA").GetValues() + aqui.GetPoint(prefix+"WRB").GetValues()) / 2.0
@@ -4899,6 +5001,9 @@ class CGM1UpperLimbs(CGM):
 
         if side == "Left":
             prefix ="L"
+        if side == "Right":
+            prefix ="R"
+            s= 1.0
 
         pfn = aquiStatic.GetPointFrameNumber()
 
@@ -4983,6 +5088,9 @@ class CGM1UpperLimbs(CGM):
         """
         if side == "Left":
             prefix ="L"
+        if side == "Right":
+            prefix ="R"
+            s= 1.0
 
         segname = side + " " +"UpperArm"
 
@@ -5031,6 +5139,9 @@ class CGM1UpperLimbs(CGM):
         if side == "Left":
             prefix ="L"
             s= -1.0
+        if side == "Right":
+            prefix ="R"
+            s= 1.0
 
         pfn = aquiStatic.GetPointFrameNumber()
 
@@ -5121,6 +5232,9 @@ class CGM1UpperLimbs(CGM):
         """
         if side == "Left":
             prefix ="L"
+        if side == "Right":
+            prefix ="R"
+            s= 1.0
 
         seg=self.getSegment(side+" ForeArm")
 
@@ -5172,6 +5286,9 @@ class CGM1UpperLimbs(CGM):
 
         if side == "Left":
             prefix ="L"
+        if side == "Right":
+            prefix ="R"
+            s= 1.0
 
         pfn = aquiStatic.GetPointFrameNumber()
 
@@ -5251,6 +5368,9 @@ class CGM1UpperLimbs(CGM):
         """
         if side == "Left":
             prefix ="L"
+        if side == "Right":
+            prefix ="R"
+
 
         seg=self.getSegment(side +" Hand")
 
@@ -5306,24 +5426,25 @@ class CGM1UpperLimbs(CGM):
 
         """
 
-
-
-
-
-
-
         if motionMethod == enums.motionMethod.Determinist: #cmf.motionMethod.Native:
             self._thorax_motion(aqui, dictRef,dictAnat,options=options)
-            self._clavicle_motion("Left",aqui, dictRef,dictAnat,options=options)
             self._head_motion(aqui, dictRef,dictAnat,options=options)
 
+            self._clavicle_motion("Left",aqui, dictRef,dictAnat,options=options)
             self._constructArmVirtualMarkers("Left", aqui)
             self._upperArm_motion("Left",aqui, dictRef,dictAnat,options=options,   frameReconstruction="Technical")
             self._foreArm_motion("Left",aqui, dictRef,dictAnat,options=options, frameReconstruction="Technical")
             self._upperArm_motion("Left",aqui, dictRef,dictAnat,options=options,   frameReconstruction="Anatomical")
             self._foreArm_motion("Left",aqui, dictRef,dictAnat,options=options, frameReconstruction="Anatomical")
-
             self._hand_motion("Left",aqui, dictRef,dictAnat,options=options)
+
+            self._clavicle_motion("Right",aqui, dictRef,dictAnat,options=options)
+            self._constructArmVirtualMarkers("Right", aqui)
+            self._upperArm_motion("Right",aqui, dictRef,dictAnat,options=options,   frameReconstruction="Technical")
+            self._foreArm_motion("Right",aqui, dictRef,dictAnat,options=options, frameReconstruction="Technical")
+            self._upperArm_motion("Right",aqui, dictRef,dictAnat,options=options,   frameReconstruction="Anatomical")
+            self._foreArm_motion("Right",aqui, dictRef,dictAnat,options=options, frameReconstruction="Anatomical")
+            self._hand_motion("Right",aqui, dictRef,dictAnat,options=options)
 
 
     def _thorax_motion(self,aqui, dictRef,dictAnat,options=None):
@@ -5412,9 +5533,15 @@ class CGM1UpperLimbs(CGM):
             LSJCvalues[i,:] = modelDecorator.chord( -1.0*(self.mp["LeftShoulderOffset"]+ markerDiameter/2.0) ,LSHO,OT,LVWM, beta=0 )
             LVWMvalues[i,:] = LVWM
 
+            RSHO = aqui.GetPoint(str("RSHO")).GetValues()[i,:]
+            RVWM = np.cross((RSHO - OT ), csFrame.m_axisX ) + RSHO
+
+            RSJCvalues[i,:] = modelDecorator.chord( 1.0*(self.mp["RightShoulderOffset"]+ markerDiameter/2.0) ,RSHO,OT,RVWM, beta=0 )
+            RVWMvalues[i,:] = RVWM
+
         btkTools.smartAppendPoint(aqui,"OT",OTvalues,desc="")
         btkTools.smartAppendPoint(aqui,"LVWM",LVWMvalues,desc="")
-
+        btkTools.smartAppendPoint(aqui,"RVWM",RVWMvalues,desc="")
         #btkTools.smartAppendPoint(aqui,"LKJC_Chord",LKJCvalues,desc="chord")
 
         # --- LKJC
@@ -5423,13 +5550,21 @@ class CGM1UpperLimbs(CGM):
             desc = aqui.GetPoint(options["useLeftSJCmarker"]).GetDescription()
             btkTools.smartAppendPoint(aqui,"LSJC",LSJCvalues,desc=desc)
 
+        if  "useRightSJCmarker" in options.keys():
+            RSJCvalues = aqui.GetPoint(options["useRightSJCmarker"]).GetValues()
+            desc = aqui.GetPoint(options["useRightSJCmarker"]).GetDescription()
+            btkTools.smartAppendPoint(aqui,"RSJC",RSJCvalues,desc=desc)
+
         # final LKJC ( just check if KJC already exist)
         if not btkTools.isPointExist(aqui,"LSJC"):
             desc = seg.getReferential('TF').static.getNode_byLabel("LSJC").m_desc
             #LKJCvalues = aqui.GetPoint("LKJC_Chord").GetValues()
             btkTools.smartAppendPoint(aqui,"LSJC",LSJCvalues,desc=str("Chord-"+desc))
 
-
+        if not btkTools.isPointExist(aqui,"RSJC"):
+            desc = seg.getReferential('TF').static.getNode_byLabel("RSJC").m_desc
+            #LKJCvalues = aqui.GetPoint("LKJC_Chord").GetValues()
+            btkTools.smartAppendPoint(aqui,"RSJC",RSJCvalues,desc=str("Chord-"+desc))
 
         # --- motion of the anatomical referential
         seg.anatomicalFrame.motion=[]
@@ -5481,6 +5616,9 @@ class CGM1UpperLimbs(CGM):
         """
         if side == "Left":
             prefix = "L"
+        if side == "Right":
+            prefix ="R"
+            s= 1.0
 
 
         seg=self.getSegment(side+" Clavicle")
@@ -5569,6 +5707,9 @@ class CGM1UpperLimbs(CGM):
         """
         if side == "Left":
             prefix = "L"
+        if side == "Right":
+            prefix ="R"
+            s= 1.0
 
         if "markerDiameter" in options.keys():
             logging.debug(" option (markerDiameter) found ")
@@ -5710,6 +5851,9 @@ class CGM1UpperLimbs(CGM):
         if side == "Left":
             prefix = "L"
             s = -1.0
+        if side == "Right":
+            prefix ="R"
+            s= 1.0
 
         if "markerDiameter" in options.keys():
             logging.debug(" option (markerDiameter) found ")
@@ -5848,6 +5992,9 @@ class CGM1UpperLimbs(CGM):
         """
         if side == "Left":
             prefix = "L"
+        if side == "Right":
+            prefix ="R"
+            s= 1.0
 
         if "markerDiameter" in options.keys():
             logging.debug(" option (markerDiameter) found ")

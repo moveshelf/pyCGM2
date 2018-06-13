@@ -21,7 +21,7 @@ pyCGM2.CONFIG.addBtk()
 from pyCGM2.Tools import  btkTools
 from pyCGM2.Model.CGM2 import cgm
 from pyCGM2.Model import  modelFilters,modelDecorator, frame
-import pyCGM2.enums as pyCGM2Enums
+from pyCGM2 import enums
 
 
 def getViconRmatrix(frameVal, acq, originLabel, proximalLabel, lateralLabel, sequence):
@@ -41,11 +41,11 @@ def getViconRmatrix(frameVal, acq, originLabel, proximalLabel, lateralLabel, seq
         return R
 
 
-class CGM1_calibrationTest():
+class CGM1_motionTest():
 
 
     @classmethod
-    def basicCGM1(cls):
+    def CGM1_fullUpperLimb(cls):
 
         MAIN_PATH = pyCGM2.CONFIG.TEST_DATA_PATH + "CGM1\\CGM1-TESTS\\full-PiG\\"
         staticFilename = "PN01NORMSTAT.c3d"
@@ -80,7 +80,7 @@ class CGM1_calibrationTest():
         acqGait = btkTools.smartReader(str(MAIN_PATH +  gaitFilename))
 
 
-        modMotion=modelFilters.ModelMotionFilter(scp,acqGait,model,pyCGM2Enums.motionMethod.Determinist)
+        modMotion=modelFilters.ModelMotionFilter(scp,acqGait,model,enums.motionMethod.Determinist)
         modMotion.compute()
 
         csdf = modelFilters.CoordinateSystemDisplayFilter(csp,model,acqGait)
@@ -88,14 +88,14 @@ class CGM1_calibrationTest():
         csdf.display()
 
 
-        btkTools.smartWriter(acqGait,"testUpperLimbMotion1.c3d")
+        btkTools.smartWriter(acqGait,"upperLimb_motion1.c3d")
 
         # --- motion ----
         gaitFilename="PN01NORMSS02.c3d"
         acqGait = btkTools.smartReader(str(MAIN_PATH +  gaitFilename))
 
 
-        modMotion=modelFilters.ModelMotionFilter(scp,acqGait,model,pyCGM2Enums.motionMethod.Determinist)
+        modMotion=modelFilters.ModelMotionFilter(scp,acqGait,model,enums.motionMethod.Determinist)
         modMotion.compute()
 
         csdf = modelFilters.CoordinateSystemDisplayFilter(csp,model,acqGait)
@@ -103,13 +103,7 @@ class CGM1_calibrationTest():
         csdf.display()
 
 
-        btkTools.smartWriter(acqGait,"testUpperLimbMotion2.c3d")
-
-        # R_leftShankVicon = getViconRmatrix(10, acqGait, "LTIO", "LTIP", "LTIL", "ZXiY")
-        # R_rightShankVicon = getViconRmatrix(10, acqGait, "RTIO", "RTIP", "RTIL", "ZXiY")
-        #
-        # np.testing.assert_almost_equal( R_leftShankProx,
-        #                                 R_leftShankVicon, decimal =3)
+        btkTools.smartWriter(acqGait,"upperLimb_motion2.c3d")
 
 
 
@@ -122,7 +116,7 @@ if __name__ == "__main__":
 
 
 
-    CGM1_calibrationTest.basicCGM1()
+    CGM1_motionTest.CGM1_fullUpperLimb()
 
 
 
