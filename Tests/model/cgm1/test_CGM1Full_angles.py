@@ -76,7 +76,7 @@ class CGM1_angleTest():
 
         btkTools.smartWriter(acqGait,"upperLimb_angle.c3d")
 
-        angleLabel = "RShoulderAngles"
+        angleLabel = "LShoulderAngles"
         import matplotlib.pyplot as plt
         f, (ax1, ax2,ax3) = plt.subplots(1, 3)
         ax1.plot(acqGait.GetPoint(angleLabel).GetValues()[:,0],"-b")

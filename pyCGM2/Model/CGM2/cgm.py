@@ -38,7 +38,7 @@ def computeRelativeThoraxAngle(acq,upperLimbModel,lowerLimbModel,pointLabelSuffi
         anglesValues[i,1] = -1.0*Euler2
         anglesValues[i,2] = Euler3
 
-    # correction of the eventual rotation
+    # correction of offset
     i=0
     for value in anglesValues[:,2]:
         if value <0:
@@ -171,6 +171,9 @@ class CGM(model.Model):
         if rightAnkleMed and not rightKad and not rightKneeMed:
             out["right"] = enums.CgmStaticMarkerConfig.AnkleMed
         return out
+
+    def correctEulerOffset(self,jointLabel, values):
+        return values
 
 class CGM1LowerLimbs(CGM):
     """
@@ -4436,7 +4439,7 @@ class CGM1UpperLimbs(CGM):
         self.setClinicalDescriptor("LWrist",enums.DataType.Angle, [0,1,2],[1.0,-1.0,-1.0], [0.0,0,0.0])
         self.setClinicalDescriptor("LNeck",enums.DataType.Angle, [0,2,1],[-1.0,1.0,1.0], [-np.radians(180),np.radians(180),0.0])
 
-        self.setClinicalDescriptor("RShoulder",enums.DataType.Angle, [1,0,2],[-1.0,-1.0,-1.0], [0.0,-np.radians(180),np.radians(-180)])
+        self.setClinicalDescriptor("RShoulder",enums.DataType.Angle, [1,0,2],[-1.0,-1.0,1.0], [0.0,-np.radians(180),[np.radians(180),-np.radians(180)]]) # warning. i got offset on the int/ext rotation i fixed with a special behaviour of ClinicalDescriptor
         self.setClinicalDescriptor("RElbow",enums.DataType.Angle, [0,2,1],[1.0,1.0,1.0], [0.0,0.0,0.0])
         self.setClinicalDescriptor("RWrist",enums.DataType.Angle, [0,1,2],[1.0,1.0,1.0], [0.0,0,0.0])
         self.setClinicalDescriptor("RNeck",enums.DataType.Angle, [0,2,1],[-1.0,1.0,1.0], [-np.radians(180),np.radians(180),0.0])
@@ -6177,3 +6180,19 @@ class CGM1UpperLimbs(CGM):
 
                 csFrame.update(R,ptOrigin)
                 seg.anatomicalFrame.addMotionFrame(copy.deepcopy(csFrame))
+
+    def correctEulerOffset(self,jointLabel, values):
+        if jointLabel == "RShoulder":
+
+            valuesCorrect = values
+            # correction of offset
+            i=0
+            for value in values[:,2]:
+                if value <0:
+                    valuesCorrect[i,2] = value #- np.deg2rad(180.0)
+                elif value >0:
+                    valuesCorrect[i,2] = value #- np.deg2rad(180.0)
+                i+=1
+            return valuesCorrect
+        else:
+            return values

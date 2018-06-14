@@ -878,6 +878,8 @@ class ModelJCSFilter(object):
                 jointValues[i,1] = Euler2
                 jointValues[i,2] = Euler3
 
+
+
             if self.m_filter :
                 fc = self._filterCutOffFrequency
                 order = self._filterOrder
@@ -890,7 +892,33 @@ class ModelJCSFilter(object):
                 jointFinalValues = np.zeros((jointValues.shape))
                 jointFinalValues[:,0] =  np.rad2deg(descriptorInfos["SaggitalCoeff"] * (jointValues[:,descriptorInfos["SaggitalIndex"]] + descriptorInfos["SaggitalOffset"]))
                 jointFinalValues[:,1] =  np.rad2deg(descriptorInfos["CoronalCoeff"] * (jointValues[:,descriptorInfos["CoronalIndex"]] + descriptorInfos["CoronalOffset"]))
-                jointFinalValues[:,2] =  np.rad2deg(descriptorInfos["TransversalCoeff"] * (jointValues[:,descriptorInfos["TransversalIndex"]] + descriptorInfos["TransversalOffset"]))
+
+                if isinstance(descriptorInfos["TransversalOffset"],list):
+                    jointFinalValues[:,2] = jointValues[:,descriptorInfos["TransversalIndex"]]
+                    # correction of offset
+                    i=0
+                    for value in jointFinalValues[:,2]:
+                        #print value
+                        if value <0:
+
+                            tmp = value + descriptorInfos["TransversalOffset"][0]
+                        elif value >0:
+                            tmp = value + descriptorInfos["TransversalOffset"][1]
+
+                        jointFinalValues[i,2]=tmp
+                        #print jointFinalValues[i,2]
+                        #import ipdb; ipdb.set_trace()
+                        i+=1
+
+
+                    jointFinalValues[:,2] = np.rad2deg(descriptorInfos["TransversalCoeff"] * (jointFinalValues[:,2]))
+
+                else:
+                    jointFinalValues[:,2] =  np.rad2deg(descriptorInfos["TransversalCoeff"] * (jointValues[:,descriptorInfos["TransversalIndex"]] + descriptorInfos["TransversalOffset"]))
+
+                #jointFinalValues2 = self.m_model.correctEulerOffset(jointLabel, jointFinalValues)
+                #jointFinalValues = jointFinalValues2
+                #if jointLabel =="RShoulder": import ipdb; ipdb.set_trace()
             else:
                 logging.debug("no clinical descriptor for joint label (%s)" %(jointLabel) )
                 jointFinalValues = np.rad2deg(jointValues)
