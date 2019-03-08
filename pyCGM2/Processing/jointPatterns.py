@@ -271,9 +271,6 @@ class XlsJointPatternProcedure(object):
                 flag2 = True
                 i=0
                 for it in secondaries:
-                    print "-------"
-                    print i
-                    print "-------"
                     score = it["score"]
                     count =0
                     for dict2It in it["case"]:
