@@ -291,7 +291,7 @@ def automaticCPdeviations(DATA_PATH,analysis,pointLabelSuffix=None, export=True,
     dataFrameValues = dpf.getValues()
     dataFramePatterns = dpf.getPatterns()
 
-    if export
+    if export:
         # xlsExport = exporter.XlsExportDataFrameFilter()
         # xlsExport.setDataFrames([dataFrameValues])
         # xlsExport.export(str(outputname+"_Data"), path=DATA_PATH)
