@@ -276,7 +276,7 @@ def normalizedEMG(analysis, emgChannels,contexts, method="MeanMax", fromOtherAna
         del envnf
 
 
-def automaticCPdeviations(DATA_PATH,analysis,pointLabelSuffix=None, export=True, outputname ="Nieuwenhuys2017" ):
+def automaticCPdeviations(DATA_PATH,analysis,pointLabelSuffix=None,filterTrue=False, export=True, outputname ="Nieuwenhuys2017" ):
     """
     Detect gait deviation for CP according a Delphi Consensus (Nieuwenhuys2017 et al 2017)
 
@@ -289,7 +289,7 @@ def automaticCPdeviations(DATA_PATH,analysis,pointLabelSuffix=None, export=True,
     jpp = jointPatterns.XlsJointPatternProcedure(rulesXls,pointSuffix=pointLabelSuffix)
     dpf = jointPatterns.JointPatternFilter(jpp, analysis)
     dataFrameValues = dpf.getValues()
-    dataFramePatterns = dpf.getPatterns()
+    dataFramePatterns = dpf.getPatterns(filter = filterTrue)
 
     if export:
         # xlsExport = exporter.XlsExportDataFrameFilter()
