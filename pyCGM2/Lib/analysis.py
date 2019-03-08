@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #import ipdb
-
+import pyCGM2
 from pyCGM2.Processing import c3dManager, cycle, analysis
 from pyCGM2.Model.CGM2 import  cgm
 from pyCGM2.Tools import btkTools
