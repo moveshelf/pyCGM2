@@ -7,7 +7,7 @@ from pyCGM2.Tools import btkTools
 from pyCGM2.EMG import emgFilters
 from pyCGM2 import enums
 from pyCGM2.Processing import exporter
-
+from pyCGM2.Processing import jointPatterns
 
 def makeAnalysis(DATA_PATH,
                     modelledFilenames,
