@@ -60,7 +60,7 @@ class JointPatternFilter(object):
 
             filteredDataPattern = dataframePattern.loc[dataframePattern['Success'].isin(['TRUE','partial-primary','partial-secondary'])]
 
-            return filteredDataPattern[['Context','Pattern']]
+            return filteredDataPattern#[['Context','Plane' ,'Pattern']]
 
 
 
