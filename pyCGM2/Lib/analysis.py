@@ -299,3 +299,5 @@ def automaticCPdeviations(DATA_PATH,analysis,pointLabelSuffix=None,filterTrue=Fa
         xlsExport = exporter.XlsExportDataFrameFilter()
         xlsExport.setDataFrames([dataFramePatterns])
         xlsExport.export(str(outputname+"_Patterns"), path=DATA_PATH)
+
+    return dataFramePatterns
