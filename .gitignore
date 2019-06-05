@@ -96,6 +96,9 @@ ENV/
 *.sln
 *.suo
 
+# PyCharm
+.idea
+
 
 Sandbox
 Obsolete
