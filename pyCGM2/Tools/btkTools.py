@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import logging
-import btk
+from pyCGM2 import btk
 
 # --- acquisition -----
 def smartReader(filename,translators=None):

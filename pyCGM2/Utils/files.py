@@ -25,14 +25,14 @@ def openFile(path, filename):
         content = open(full_path).read()
 
         if is_json(content):
-            logging.info("your file (%s) matches json syntax"%filename)
+            logging.info("your file (%s) matches json syntax" % filename)
             return openJson(path, filename)
 
         elif is_yaml(content):
-            logging.info("your file (%s) matches yaml syntax"%filename)
+            logging.info("your file (%s) matches yaml syntax" % filename)
             return openYaml(path, filename)
         else:
-            raise RuntimeError("%s is neither a Yaml or a json file"%filename)
+            raise RuntimeError("%s is neither a Yaml or a json file" % filename)
 
     else:
         return False
@@ -64,6 +64,7 @@ def saveModel(model, path, FilenameNoExt):
 
     #pyCGM2.model
     if os.path.isfile(path + filename):
+
         logging.warning("previous model removed")
         os.remove(path + filename)
 
@@ -111,7 +112,7 @@ def openJson(path, filename, stringContent=None):
             if path is None:
                 jsonStuct= json.loads(open(str(filename)).read(),object_pairs_hook=OrderedDict)
             else:
-                jsonStuct= json.loads(open(str(path+filename)).read(),object_pairs_hook=OrderedDict)
+                jsonStuct= json.loads(open(os.path.join(path, filename)).read(),object_pairs_hook=OrderedDict)
             return jsonStuct
         except :
             raise RuntimeError("[pyCGM2] : json syntax of file (%s) is incorrect. check it" %(filename))
@@ -134,7 +135,7 @@ def openYaml(path,filename,stringContent=None):
             if path is None:
                 struct = yaml.load(open(str(filename)).read(),Loader=yamlordereddictloader.Loader)
             else:
-                struct= yaml.load(open(str(path+filename)).read(),Loader=yamlordereddictloader.Loader)
+                struct= yaml.load(open(os.path.join(path, filename)).read(),Loader=yamlordereddictloader.Loader)
             return struct
         except :
             raise RuntimeError("[pyCGM2] : yaml syntax of file (%s) is incorrect. check it" %(filename))

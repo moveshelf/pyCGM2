@@ -185,27 +185,31 @@ class CGM1(CGM):
         """
             Model configuration. Define Segment, joint, ...
         """
-
         if bodyPart is None:
             if acq is None:
-                raise Exception ("[pyCGM2] You must indicate a static acquisition or a bodyPart ")
+                raise Exception("[pyCGM2] You must indicate a static acquisition or a bodyPart")
 
-            if detectedCalibrationMethods["Left Knee"] == enums.JointCalibrationMethod.KAD:
+            elif detectedCalibrationMethods["Left Knee"] == enums.JointCalibrationMethod.KAD:
                 self._lowerLimbTrackingMarkers().remove("LKNE")
-            if detectedCalibrationMethods["Right Knee"] == enums.JointCalibrationMethod.KAD:
+                
+            elif detectedCalibrationMethods["Right Knee"] == enums.JointCalibrationMethod.KAD:
                 self._lowerLimbTrackingMarkers().remove("RKNE")
 
-            if btkTools.isPointsExist(acq,self._lowerLimbTrackingMarkers()):
+            elif btkTools.isPointsExist(acq, self._lowerLimbTrackingMarkers()):
                 bodyPart = enums.BodyPart.LowerLimb
 
-            if btkTools.isPointsExist(acq,self._upperLimbTrackingMarkers()):
+            elif btkTools.isPointsExist(acq, self._upperLimbTrackingMarkers()):
                 bodyPart = enums.BodyPart.UpperLimb
 
-            if btkTools.isPointsExist(acq,self._lowerLimbTrackingMarkers()+self._trunkTrackingMarkers()):
+            elif btkTools.isPointsExist(acq, self._lowerLimbTrackingMarkers() + self._trunkTrackingMarkers()):
                 bodyPart = enums.BodyPart.LowerLimbTrunk
 
-            if btkTools.isPointsExist(acq,self._lowerLimbTrackingMarkers()+self._upperLimbTrackingMarkers()):
+            elif btkTools.isPointsExist(acq, self._lowerLimbTrackingMarkers() + self._upperLimbTrackingMarkers()):
                 bodyPart = enums.BodyPart.FullBody
+
+            else:
+                raise RuntimeError("Could not determine body part: acq:" + str(acq) + ", bodyPart:" + str(bodyPart) +
+                                   ", dcm: " + str(detectedCalibrationMethods))
 
             self.setBodyPart(bodyPart)
         else:

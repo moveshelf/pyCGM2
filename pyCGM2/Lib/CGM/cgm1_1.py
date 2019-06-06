@@ -1,25 +1,20 @@
 # -*- coding: utf-8 -*-
-#import ipdb
 import logging
-import matplotlib.pyplot as plt
-import argparse
+import os
 
-
-# pyCGM2 settings
-import pyCGM2
 
 # pyCGM2 libraries
 from pyCGM2.Tools import btkTools
 from pyCGM2 import enums
 
-from pyCGM2.Model import modelFilters, modelDecorator,bodySegmentParameters
+from pyCGM2.Model import modelFilters, bodySegmentParameters
 from pyCGM2.Model.CGM2 import cgm
 from pyCGM2.Model.CGM2 import decorators
 from pyCGM2.ForcePlates import forceplates
 
 
-def calibrate(DATA_PATH,calibrateFilenameLabelled,translators,
-              required_mp,optional_mp,
+def calibrate(DATA_PATH, calibrateFilenameLabelled, translators,
+              required_mp, optional_mp,
               leftFlatFoot,rightFlatFoot,markerDiameter,
               pointSuffix,**kwargs):
 
@@ -40,16 +35,15 @@ def calibrate(DATA_PATH,calibrateFilenameLabelled,translators,
     # --------------------------ACQUISITION ------------------------------------
 
     # ---btk acquisition---
-    acqStatic = btkTools.smartReader(str(DATA_PATH+calibrateFilenameLabelled))
+    acqStatic = btkTools.smartReader(os.path.join(DATA_PATH, calibrateFilenameLabelled))
     btkTools.checkMultipleSubject(acqStatic)
-
-    acqStatic =  btkTools.applyTranslators(acqStatic,translators)
+    acqStatic = btkTools.applyTranslators(acqStatic, translators)
 
     # ---detectedCalibrationMethods----
     dcm= cgm.CGM.detectCalibrationMethods(acqStatic)
 
     # ---definition---
-    model=cgm.CGM1()
+    model = cgm.CGM1()
     model.setVersion("CGM1.1")
     model.configure(acq=acqStatic,detectedCalibrationMethods=dcm)
     model.addAnthropoInputParameters(required_mp,optional=optional_mp)
@@ -164,7 +158,7 @@ def fitting(model,DATA_PATH, reconstructFilenameLabelled,
     # --------------------------ACQUISITION ------------------------------------
 
     # --- btk acquisition ----
-    acqGait = btkTools.smartReader(str(DATA_PATH + reconstructFilenameLabelled))
+    acqGait = btkTools.smartReader(os.path.join(DATA_PATH, reconstructFilenameLabelled))
 
     btkTools.checkMultipleSubject(acqGait)
     acqGait =  btkTools.applyTranslators(acqGait,translators)
