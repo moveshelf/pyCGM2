@@ -1,0 +1,39 @@
+DATA_PATH: None
+
+MP:
+    Required:
+        Bodymass: 80
+        Height: 170
+        LeftLegLength: 70
+        RightLegLength: 70
+        LeftKneeWidth: 15
+        RightKneeWidth: 15
+        LeftAnkleWidth: 8
+        RightAnkleWidth: 8
+        LeftSoleDelta: 5
+        RightSoleDelta: 5
+    Optional:
+        InterAsisDistance: 0
+        LeftAsisTrocanterDistance: 0
+        LeftTibialTorsion: 0
+        LeftThighRotation: 0
+        LeftShankRotation: 0
+        RightAsisTrocanterDistance: 0
+        RightTibialTorsion: 0
+        RightThighRotation: 0
+        RightShankRotation: 0
+        LeftKneeFuncCalibrationOffset: 0
+        RightKneeFuncCalibrationOffset: 0
+
+Global:
+    Marker diameter: 25 #change
+
+Calibration:
+    StaticTrial: static.c3d
+
+Fitting:
+    Trials:
+        - File: gait_trial_01.c3d
+          Mfpa: LRXX
+        - File: None
+          Mfpa: RLXX

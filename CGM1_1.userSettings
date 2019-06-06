@@ -1,0 +1,48 @@
+DATA_PATH: None
+
+MP:
+    Required:
+        Bodymass: 80
+        Height: 170
+        LeftLegLength: 70
+        RightLegLength: 70
+        LeftKneeWidth: 15
+        RightKneeWidth: 15
+        LeftAnkleWidth: 8
+        RightAnkleWidth: 8
+        LeftSoleDelta: 5
+        RightSoleDelta: 5
+        LeftShoulderOffset: 10
+        RightShoulderOffset: 10
+        LeftElbowWidth: 5
+        RightElbowWidth: 5
+        LeftWristWidth: 5
+        RightWristWidth: 5
+        LeftHandThickness: 5
+        RightHandThickness: 5
+    Optional:
+        InterAsisDistance: 0
+        LeftAsisTrocanterDistance: 0
+        LeftTibialTorsion: 0
+        LeftThighRotation: 0
+        LeftShankRotation: 0
+        RightAsisTrocanterDistance: 0
+        RightTibialTorsion: 0
+        RightThighRotation: 0
+        RightShankRotation: 0
+        LeftKneeFuncCalibrationOffset: 0
+        RightKneeFuncCalibrationOffset: 0
+
+Global:
+    Marker diameter: 25 #change
+    Point suffix: PYCGM2 #change
+
+Calibration:
+    StaticTrial: static_01.c3d
+    Left flat foot: 1 #change
+    Right flat foot: 1 #change
+
+Fitting:
+    Trials:
+        - File: gait.c3d
+          Mfpa: RL
