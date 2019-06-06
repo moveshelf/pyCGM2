@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
-import cPickle
+from __future__ import print_function
+
+try:
+    import cPickle
+except ModuleNotFoundError:
+    import pickle as cPickle
+
 import logging
 import json
 import os
@@ -11,31 +17,28 @@ import yamlordereddictloader
 
 import pyCGM2
 
-def openFile(path,filename):
 
-    if os.path.isfile( path + filename):
-        content = open(str(path+filename)).read()
+def openFile(path, filename):
+    full_path = os.path.join(path, filename)
 
+    if os.path.isfile(full_path):
+        content = open(full_path).read()
 
-        jsonFlag = is_json(content)
-        yamlFlag = is_yaml(content)
-        if jsonFlag:
+        if is_json(content):
             logging.info("your file (%s) matches json syntax"%filename)
-            struct = openJson(path ,str(filename))
+            return openJson(path, filename)
 
-        if yamlFlag:
+        elif is_yaml(content):
             logging.info("your file (%s) matches yaml syntax"%filename)
-            struct = openYaml(path,filename)
+            return openYaml(path, filename)
+        else:
+            raise RuntimeError("%s is neither a Yaml or a json file"%filename)
 
-        if not yamlFlag and not yamlFlag:
-            raise Exception ("%s is neither a Yaml or a json file"%filename)
-
-        return struct
     else:
         return False
 
 
-def loadModel(path,FilenameNoExt):
+def loadModel(path, FilenameNoExt):
     if FilenameNoExt is not None:
         filename = FilenameNoExt + "-pyCGM2.model"
     else:
@@ -43,7 +46,7 @@ def loadModel(path,FilenameNoExt):
 
     # --------------------pyCGM2 MODEL ------------------------------
     if not os.path.isfile(path + filename):
-        raise Exception ("%s-pyCGM2.model file doesn't exist. Run CGM Calibration operation"%filename)
+        raise RuntimeError("%s-pyCGM2.model file doesn't exist. Run CGM Calibration operation"%filename)
     else:
         f = open(path + filename, 'r')
         model = cPickle.load(f)
@@ -51,7 +54,8 @@ def loadModel(path,FilenameNoExt):
 
         return model
 
-def saveModel(model,path,FilenameNoExt):
+
+def saveModel(model, path, FilenameNoExt):
 
     if FilenameNoExt is not None:
         filename = FilenameNoExt + "-pyCGM2.model"
@@ -68,7 +72,7 @@ def saveModel(model,path,FilenameNoExt):
     modelFile.close()
 
 
-def loadAnalysis(path,FilenameNoExt):
+def loadAnalysis(path, FilenameNoExt):
     if FilenameNoExt is not None:
         filename = FilenameNoExt + "-pyCGM2.analysis"
     else:
@@ -76,7 +80,7 @@ def loadAnalysis(path,FilenameNoExt):
 
     # --------------------pyCGM2 MODEL ------------------------------
     if not os.path.isfile(path + filename):
-        raise Exception ("%s-pyCGM2.analysis file doesn't exist"%filename)
+        raise RuntimeError("%s-pyCGM2.analysis file doesn't exist"%filename)
     else:
         f = open(path + filename, 'r')
         analysis = cPickle.load(f)
@@ -84,7 +88,7 @@ def loadAnalysis(path,FilenameNoExt):
 
         return analysis
 
-def saveAnalysis(analysisInstance,path,FilenameNoExt):
+def saveAnalysis(analysisInstance, path, FilenameNoExt):
 
     if FilenameNoExt is not None:
         filename = FilenameNoExt + "-pyCGM2.analysis"
@@ -101,12 +105,7 @@ def saveAnalysis(analysisInstance,path,FilenameNoExt):
     analysisFile.close()
 
 
-
-
-
-
-def openJson(path,filename,stringContent=None):
-
+def openJson(path, filename, stringContent=None):
     if stringContent is None:
         try:
             if path is None:
@@ -115,7 +114,7 @@ def openJson(path,filename,stringContent=None):
                 jsonStuct= json.loads(open(str(path+filename)).read(),object_pairs_hook=OrderedDict)
             return jsonStuct
         except :
-            raise Exception ("[pyCGM2] : json syntax of file (%s) is incorrect. check it" %(filename))
+            raise RuntimeError("[pyCGM2] : json syntax of file (%s) is incorrect. check it" %(filename))
     else:
         jsonStuct = json.loads(stringContent,object_pairs_hook=OrderedDict)
         return jsonStuct
@@ -126,10 +125,7 @@ def saveJson(path, filename, content):
 
 
 def prettyDictPrint(parsedContent):
-    print json.dumps(parsedContent, indent=4, sort_keys=True)
-
-
-
+    print(json.dumps(parsedContent, indent=4, sort_keys=True))
 
 
 def openYaml(path,filename,stringContent=None):
@@ -141,7 +137,7 @@ def openYaml(path,filename,stringContent=None):
                 struct= yaml.load(open(str(path+filename)).read(),Loader=yamlordereddictloader.Loader)
             return struct
         except :
-            raise Exception ("[pyCGM2] : yaml syntax of file (%s) is incorrect. check it" %(filename))
+            raise RuntimeError("[pyCGM2] : yaml syntax of file (%s) is incorrect. check it" %(filename))
     else:
         struct = yaml.load(stringContent,Loader=yamlordereddictloader.Loader)
         return struct
@@ -304,10 +300,8 @@ def getC3dFiles(path, text="", ignore=None ):
     return out
 
 def copySessionFolder(folderPath, folder2copy, newFolder, selectedFiles=None):
-
     if not os.path.isdir(str(folderPath+"\\"+newFolder)):
         os.makedirs(str(folderPath+"\\"+newFolder))
-
 
     for file in os.listdir(folderPath+"\\"+folder2copy):
         if file.endswith(".Session.enf"):
@@ -335,6 +329,7 @@ def copySessionFolder(folderPath, folder2copy, newFolder, selectedFiles=None):
 
                     shutil.copyfile(src, dst)
 
+
 def createDir(fullPathName):
     pathOut = fullPathName[:-1] if fullPathName[-1:]=="\\" else fullPathName
     if not os.path.isdir(str(pathOut)):
@@ -342,10 +337,12 @@ def createDir(fullPathName):
     else:
         logging.warning("directory already exists")
 
+
 def getDirs(folderPath):
     pathOut = folderPath[:-1] if folderPath[-1:]=="\\" else folderPath
     dirs = [ name for name in os.listdir(pathOut) if os.path.isdir(os.path.join(pathOut, name)) ]
     return ( dirs)
+
 
 def try_as(loader, s, on_error):
     try:
@@ -354,11 +351,14 @@ def try_as(loader, s, on_error):
     except on_error:
         return False
 
+
 def is_json(s):
     return try_as(json.loads, s, ValueError)
 
+
 def is_yaml(s):
     return try_as(yaml.safe_load, s, yaml.scanner.ScannerError)
+
 
 def generateEmptyENF(path):
     c3ds = getFiles(path,"c3d")

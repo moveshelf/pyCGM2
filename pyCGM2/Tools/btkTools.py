@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import logging
-
-from pyCGM2 import btk
+import btk
 
 # --- acquisition -----
 def smartReader(filename,translators=None):
@@ -232,7 +231,6 @@ def applyTranslators(acq, translators):
     for it in translators.items():
         wantedLabel,initialLabel = it[0],it[1]
         if initialLabel !="None":
-            print wantedLabel
             if isPointExist(acq,wantedLabel):
                 smartAppendPoint(acqClone,str(wantedLabel+"_origin"),acq.GetPoint(str(wantedLabel)).GetValues(),PointType=btk.btkPoint.Marker) # modified marker
                 logging.warning("wantedLabel (%s)_origin created" %(str(wantedLabel)))

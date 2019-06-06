@@ -3,15 +3,11 @@ import numpy as np
 import copy
 import logging
 
-from pyCGM2 import btk
-
-import frame
-
-from pyCGM2 import enums
-from pyCGM2.Model import motion
-from  pyCGM2.Tools import  btkTools
-from pyCGM2.Math import  derivation
-from  pyCGM2.Signal import signal_processing
+from pyCGM2 import btk, enums
+from pyCGM2.Model import motion, frame
+from pyCGM2.Tools import btkTools
+from pyCGM2.Math import derivation
+from pyCGM2.Signal import signal_processing
 
 
 class ClinicalDescriptor(object):

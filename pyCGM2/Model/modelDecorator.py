@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import logging
-import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
 
-
 import pyCGM2
-import model
-
+from pyCGM2.Model import model
 
 from pyCGM2 import enums
 from pyCGM2.Tools import  btkTools
 from pyCGM2.Math import  numeric, geometry,euler
 from pyCGM2.Model import frame
+
 
 def setDescription(nodeLabel):
     """

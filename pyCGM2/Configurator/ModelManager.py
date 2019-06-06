@@ -31,20 +31,16 @@ class ModelConfigManager(Manager.ConfigManager):
         return li
 
     def contruct(self):
+        finalSettings = copy.deepcopy(self._internSettings)
 
-        finalSettings =  copy.deepcopy(self._internSettings)
+        finalSettings["Calibration"]["StaticTrial"] = self._userSettings["Calibration"]["StaticTrial"]
+        finalSettings["Fitting"]["Trials"] = self._userSettings["Fitting"]["Trials"]
 
-        finalSettings["Calibration"].update({"StaticTrial":self._userSettings["Calibration"]["StaticTrial"]})
-        finalSettings["Fitting"].update({"Trials":self._userSettings["Fitting"]["Trials"]})
-
-        for key in self._userSettings.keys(): #upate of #mp
-            if key  not in finalSettings.keys():
-                print key
-                finalSettings.update({key : self._userSettings[key]})
+        for key in self._userSettings:  # upate of #mp
+            if key not in finalSettings:
+                finalSettings.update({key: self._userSettings[key]})
 
         self.finalSettings = finalSettings
-
-
 
 
 class CGM1ConfigManager(ModelConfigManager):

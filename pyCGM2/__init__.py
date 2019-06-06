@@ -3,6 +3,7 @@ import glob
 import re
 import os
 import logging
+import btk
 
 
 def getLastNexusVersion():

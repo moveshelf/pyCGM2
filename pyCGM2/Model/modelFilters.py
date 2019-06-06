@@ -4,9 +4,7 @@ import numpy as np
 import copy
 
 from pyCGM2 import btk
-
-import frame
-import motion
+from pyCGM2.Model import frame, motion
 
 from pyCGM2 import enums
 from  pyCGM2.Math import euler,numeric
@@ -406,7 +404,6 @@ class ModelCalibrationFilter(object):
         else :
             # calibration of technical Frames
             for segName in self.m_procedure.definition:
-                print segName
                 segPicked=self.m_model.getSegment(segName)
                 for tfName in self.m_procedure.definition[segName]: # TF name
 
@@ -446,7 +443,6 @@ class ModelCalibrationFilter(object):
             if not self.m_noAnatomicalCalibration:
                 # calibration of technical Frames
                 for segName in self.m_procedure.anatomicalDefinition:
-                    print segName
                     segPicked=self.m_model.getSegment(segName)
                     tf=segPicked.getReferential("TF")
                     #if segName == "Right Shank":
